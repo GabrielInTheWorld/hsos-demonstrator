@@ -1,0 +1,19 @@
+.headbar--background {
+    position: fixed;
+    top: 0;
+
+    .headbar--left-side {
+        margin-right: 8px;
+    }
+    .headbar--right-side {
+        display: flex;
+        justify-content: flex-end;
+        flex: 1;
+    }
+    .headbar--title {
+        flex: 2;
+    }
+    .headbar--after-title {
+        flex: 2;
+    }
+}

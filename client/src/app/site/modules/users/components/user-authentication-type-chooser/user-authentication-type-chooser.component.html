@@ -1,0 +1,28 @@
+<form class="auth-type-form" [formGroup]="authTypeForm">
+    <mat-form-field *ngIf="selectedAuthenticationTypes.includes('password')">
+        <mat-label>Passwort*</mat-label>
+        <input matInput formControlName="password" [type]="isVisible ? 'text' : 'password'" />
+        <button mat-icon-button matSuffix (click)="isVisible = !isVisible">
+            <mat-icon>{{ isVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+    </mat-form-field>
+    <mat-form-field *ngIf="selectedAuthenticationTypes.includes('email')">
+        <mat-label>E-Mail-Adresse*</mat-label>
+        <input matInput formControlName="email" />
+    </mat-form-field>
+    <ng-container *ngIf="selectedAuthenticationTypes.includes('totp')">
+        <app-qr-code [value]="totpUri"></app-qr-code>
+    </ng-container>
+    <ng-container *ngIf="selectedAuthenticationTypes.includes('fido')">
+        <h3>Bitte geben Sie einen U2F-kompatiblen USB-Stick oder Ähnliches in Ihren PC ein.</h3>
+        <mat-form-field>
+            <mat-label>Authentifizierungsmethode*</mat-label>
+            <mat-select [multiple]="false" formControlName="fido">
+                <mat-option *ngFor="let model of authenticationModel | keyvalue" [value]="model.key">
+                    {{ model.value }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <!-- <button mat-raised-button color="secondary" (click)="startRegistering()">Starte Registrierungsprozess</button> -->
+    </ng-container>
+</form>

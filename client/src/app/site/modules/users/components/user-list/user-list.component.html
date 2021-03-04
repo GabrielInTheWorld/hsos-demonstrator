@@ -1,0 +1,37 @@
+<mat-list role="list" class="custom-list">
+    <ng-container *ngFor="let user of users">
+        <mat-list-item>
+            <div class="list-item--wrapper">
+                <div class="list-item--left">
+                    <div>
+                        {{ user.username }}
+                    </div>
+                    <div class="font--small">UserId: {{ user.userId }}</div>
+                    <div class="font--small">
+                        Faktoren:
+                        <ng-container *ngFor="let type of user.authenticationTypes; let i = index">
+                            <span>{{ getAuthenticationTypeVerboseName(type) }}</span>
+                            <span *ngIf="i < user.authenticationTypes.length - 1">&#44;&#160;</span>
+                        </ng-container>
+                    </div>
+                </div>
+                <ng-container
+                    [ngTemplateOutlet]="userActions"
+                    [ngTemplateOutletContext]="{ user: user }"
+                ></ng-container>
+            </div>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+    </ng-container>
+</mat-list>
+
+<ng-template #userActions let-user="user">
+    <span class="list-item--right">
+        <button mat-icon-button matTooltip="Bearbeiten" (click)="editUser.emit(user)">
+            <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button matTooltip="Löschen" (click)="deleteUser.emit(user)">
+            <mat-icon>clear</mat-icon>
+        </button>
+    </span>
+</ng-template>

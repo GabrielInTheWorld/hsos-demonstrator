@@ -1,0 +1,11 @@
+.login-site--wrapper {
+    flex-direction: column;
+    height: calc(100% - 64px);
+}
+
+.fido-container {
+    margin: 8px 0;
+    * {
+        margin: 0;
+    }
+}

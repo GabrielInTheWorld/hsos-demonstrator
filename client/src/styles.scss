@@ -1,0 +1,63 @@
+/* You can add global styles to this file, and also import other style files */
+@import '~@angular/material/theming';
+@include mat-core();
+
+// themes
+@import './assets/styles/themes/default-light.scss';
+
+// styles for components
+@import './app/ui/components/headbar/headbar.component.scss-theme.scss';
+@import './app/app.component.scss-theme.scss';
+
+@mixin app-components-theme($theme) {
+    @include app-headbar-theme($theme);
+    @include app-root-theme($theme);
+}
+
+.default-theme {
+    @include app-components-theme($default-light);
+}
+
+html,
+body {
+    height: 100%;
+}
+body {
+    margin: 0;
+    font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
+
+.full-size {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.padding-8 {
+    padding: 8px;
+}
+
+.underscore {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+}
+
+.font--small {
+    font-size: small;
+}
+
+html,
+body {
+    height: 100%;
+}
+body {
+    margin: 0;
+    font-family: Roboto, 'Helvetica Neue', sans-serif;
+}

@@ -1,0 +1,21 @@
+<h2>Geben Sie zur Authentifizierung folgende Faktoren ein:</h2>
+<form [formGroup]="authForm" (appConfirmOnEnter)="confirmLogin()">
+    <mat-form-field *ngIf="requiredAuthenticationFactors.includes('password')">
+        <input matInput formControlName="password" placeholder="Password" [type]="isVisible ? 'text' : 'password'" />
+        <button matSuffix mat-icon-button (click)="isVisible = !isVisible">
+            <mat-icon>{{ isVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+    </mat-form-field>
+    <mat-form-field *ngIf="requiredAuthenticationFactors.includes('email')">
+        <mat-label>Geben Sie den Code ein, den Sie mittels einer E-Mail erhalten haben:</mat-label>
+        <input matInput formControlName="email" placeholder="Code" />
+    </mat-form-field>
+    <mat-form-field *ngIf="requiredAuthenticationFactors.includes('totp')">
+        <mat-label>Geben Sie den aktuellen Code ein:</mat-label>
+        <input matInput formControlName="totp" placeholder="Code" />
+    </mat-form-field>
+</form>
+<div>
+    <button mat-raised-button color="primary" [disabled]="authForm.invalid" (click)="confirmLogin()">Bestätigen</button>
+    <button mat-button (click)="cancel()">Abbruch</button>
+</div>

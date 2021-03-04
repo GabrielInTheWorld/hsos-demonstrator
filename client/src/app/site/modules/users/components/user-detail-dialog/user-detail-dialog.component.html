@@ -1,0 +1,31 @@
+<h1 mat-dialog-title>{{ user ? user.username : 'Neuer Benutzer' }}</h1>
+<div mat-dialog-content>
+    <form [formGroup]="userForm" class="user-form" (appConfirmOnEnter)="onSubmit()">
+        <mat-form-field>
+            <mat-label>Benutzername*</mat-label>
+            <input matInput formControlName="username" />
+            <mat-error>Dieses Feld ist erforderlich.</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Authentifizierungsverfahren*</mat-label>
+            <mat-select [multiple]="true" formControlName="authenticationTypes">
+                <mat-option *ngFor="let type of authenticationTypes" [value]="type">
+                    {{ getVerboseAuthenticationType(type) }}
+                </mat-option>
+            </mat-select>
+            <mat-error>Dieses Feld ist erforderlich.</mat-error>
+        </mat-form-field>
+        <app-user-authentication-type-chooser
+            [user]="user"
+            [username]="username"
+            [selectedAuthenticationTypes]="selectedAuthenticationTypes"
+            (formChange)="authTypeForm = $event"
+        ></app-user-authentication-type-chooser>
+    </form>
+</div>
+<div mat-dialog-actions class="dialog-actions">
+    <button mat-button (click)="dialogRef.close()">Abbrechen</button>
+    <button [disabled]="!isValid()" mat-button color="primary" (click)="onSubmit()">
+        {{ user ? 'Aktualisieren' : 'Erstellen' }}
+    </button>
+</div>

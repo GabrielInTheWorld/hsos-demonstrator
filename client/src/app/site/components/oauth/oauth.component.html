@@ -1,0 +1,20 @@
+<mat-card class="oauth-card flex-center space-right-12">
+    <app-indicator [color]="color"></app-indicator>
+    <ng-container *ngIf="isInOpenSlidesLoggedIn">
+        <h2>Willkommen zu OpenSlides!</h2>
+        <div>Nachricht des Servers: {{ hello }}</div>
+        <div *ngIf="!specificMotion">
+            <div *ngFor="let motion of motions" class="motion-identifier" (click)="goToMotion(motion.key)">
+                {{ motion.title }}
+            </div>
+        </div>
+        <div *ngIf="specificMotion" class="motion">
+            <div class="title">Titel: {{ specificMotion.title }}</div>
+            <div class="description">Beschreibung: {{ specificMotion.description }}</div>
+            <button mat-button (click)="back()">Zurück</button>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="!isInOpenSlidesLoggedIn">
+        <button mat-raised-button (click)="oauthOpenSlides()">Zugang zu OpenSlides</button>
+    </ng-container>
+</mat-card>

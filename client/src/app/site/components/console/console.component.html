@@ -1,0 +1,8 @@
+<div class="console--wrapper" #consoleWrapper *ngIf="isOpen">
+    <div *ngFor="let message of messages">
+        <div class="console--message">
+            {{ message }}
+        </div>
+        <mat-divider></mat-divider>
+    </div>
+</div>

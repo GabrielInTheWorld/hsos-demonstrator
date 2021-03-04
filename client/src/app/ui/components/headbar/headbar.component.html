@@ -1,0 +1,21 @@
+<mat-toolbar [color]="'primary'" class="headbar--background">
+    <div class="headbar--left-side">
+        <button
+            mat-icon-button
+            (click)="toggleConsole()"
+            [matTooltip]="isConsoleOpen ? 'Schließe Konsole' : 'Öffne Konsole'"
+        >
+            <mat-icon>announcement</mat-icon>
+        </button>
+        <button [disabled]="!hasLeftIcon" mat-icon-button (click)="onLeftIconClicked()">
+            <mat-icon>{{ hasLeftIcon ? leftIcon : '' }}</mat-icon>
+        </button>
+    </div>
+    <h2 class="headbar--title">2FA Demonstrator</h2>
+    <div class="headbar--after-title">
+        <ng-content></ng-content>
+    </div>
+    <div class="headbar--right-side">
+        <ng-content select="[right-side]"></ng-content>
+    </div>
+</mat-toolbar>

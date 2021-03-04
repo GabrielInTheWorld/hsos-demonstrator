@@ -3,12 +3,17 @@
   "productName": "demonstrator",
   "version": "1.0.0",
   "description": "My Electron application description",
-  "main": "src/index.js",
+  "main": "electron/main.js",
   "scripts": {
     "start": "electron-forge start",
+    "dev": "nodemon src/index.ts",
+    "build": "npm run build-ts && npm run build-client && npm run make:packager",
+    "build-ts": "tsc",
+    "build-client": "cd client && npm run build && cd ..",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
+    "make:packager": "electron-packager . --platform=linux,win32 --arch=x64 --out=./out",
     "lint": "echo \"No linting configured\""
   },
   "keywords": [],
@@ -30,22 +35,37 @@
         {
           "name": "@electron-forge/maker-zip",
           "platforms": [
-            "darwin"
+            "darwin",
+            "linux"
           ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
         }
       ]
     }
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "axios": "^0.21.1",
+    "base-coding": "^1.0.3",
+    "bignumber.js": "^9.0.1",
+    "body-parser": "^1.19.0",
+    "cbor": "^7.0.2",
+    "cbor-sync": "^1.0.4",
+    "cookie-parser": "^1.4.5",
+    "crypto-random-string": "^3.2.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "express": "^4.17.1",
+    "fido2-library": "^2.5.2",
+    "final-otp": "^1.0.3",
+    "jsonwebtoken": "^8.5.1",
+    "pouchdb": "^7.2.1",
+    "pouchdb-adapter-memory": "^7.2.1",
+    "pouchdb-find": "^7.2.2",
+    "reactive-websocket": "^1.0.4",
+    "reflect-metadata": "^0.1.13",
+    "sendmail": "^1.6.1",
+    "sha.js": "^2.4.11",
+    "ts-node": "^8.10.1",
+    "tslib": "^1.11.2",
+    "typescript": "^3.8.3"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.54",
@@ -53,6 +73,19 @@
     "@electron-forge/maker-rpm": "^6.0.0-beta.54",
     "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
     "@electron-forge/maker-zip": "^6.0.0-beta.54",
-    "electron": "12.0.0"
+    "@types/cookie-parser": "^1.4.2",
+    "@types/cors": "^2.8.6",
+    "@types/express": "^4.17.3",
+    "@types/jsonwebtoken": "^8.3.8",
+    "@types/node": "^14.14.31",
+    "@types/pouchdb": "^6.4.0",
+    "@types/sendmail": "^1.4.2",
+    "@types/sha.js": "^2.4.0",
+    "@types/websocket": "^1.0.1",
+    "electron": "12.0.0",
+    "nodemon": "^2.0.2",
+    "prettier": "^1.19.1",
+    "tslint": "^6.1.1",
+    "websocket": "^1.0.33"
   }
 }

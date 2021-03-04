@@ -1,0 +1,12 @@
+:host {
+    margin: 6px;
+
+    .grid-cell {
+        display: inline;
+        width: calc(100% / 4 - 48px);
+
+        &.clickable {
+            cursor: pointer;
+        }
+    }
+}

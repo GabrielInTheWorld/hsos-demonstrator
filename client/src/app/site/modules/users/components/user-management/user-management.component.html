@@ -1,0 +1,10 @@
+<mat-toolbar color="accent">
+    <button mat-icon-button matTooltip="Füge einen neuen Benutzer hinzu" (click)="createUser()">
+        <mat-icon>add</mat-icon>
+    </button>
+    <button mat-icon-button matTooltip="Setze die komplette Datenbank zurück" (click)="resetDatabase()">
+        <mat-icon>delete_forever</mat-icon>
+    </button>
+</mat-toolbar>
+
+<app-user-list [users]="users" (editUser)="editUser($event)" (deleteUser)="deleteUser($event)"></app-user-list>

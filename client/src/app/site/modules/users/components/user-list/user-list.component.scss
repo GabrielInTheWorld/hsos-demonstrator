@@ -1,0 +1,20 @@
+.list-item--wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    .list-item--left {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.custom-list {
+    padding: 0;
+
+    .mat-list-item {
+        padding: 8px 0;
+        height: unset;
+    }
+}

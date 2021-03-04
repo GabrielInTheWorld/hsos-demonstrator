@@ -1,0 +1,13 @@
+.dashboard-card {
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+    min-width: 500px;
+    max-width: 900px;
+}
+
+.grid {
+    display: flex;
+    padding: 8px;
+    flex-direction: column;
+}

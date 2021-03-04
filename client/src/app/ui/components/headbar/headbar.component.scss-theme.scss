@@ -1,0 +1,11 @@
+@import '~@angular/material/theming';
+
+@mixin app-headbar-theme($theme) {
+    $primary: map-get($theme, primary);
+    $foreground: map-get($theme, foreground);
+
+    .headbar--background {
+        // background: mat-color($primary);
+        // color: mat-color($foreground, text);
+    }
+}
