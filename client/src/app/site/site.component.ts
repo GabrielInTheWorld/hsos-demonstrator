@@ -1,4 +1,9 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Logger } from '../core/utils/logger';
+
+import { HeadbarService } from '../ui/services/headbar.service';
+import { ConsoleService } from './services/console.service';
 
 @Component({
     selector: 'app-site',
@@ -10,6 +15,19 @@ export class SiteComponent implements AfterViewInit {
 
     @ViewChild('wrapper')
     public wrapper: ElementRef<HTMLElement>;
+
+    public get clientConsole(): Observable<any[]> {
+        return Logger.getLogMessagesObservable();
+    }
+
+    public get serverConsole(): Observable<any[]> {
+        return this.serverConsoleService.getLogServerMessagesObservable();
+    }
+
+    public constructor(
+        public readonly headbar: HeadbarService,
+        private readonly serverConsoleService: ConsoleService
+    ) {}
 
     public ngAfterViewInit(): void {}
 

@@ -1,4 +1,4 @@
-import { AuthenticationType } from './../../user/authentication-types';
+import { AuthenticationType } from '../models/authentication/authentication-types';
 import { BaseException } from './base-exception';
 import { User } from './../models/user';
 

@@ -1,8 +1,9 @@
 <app-headbar></app-headbar>
 
-<app-console (changeWidth)="changeWidth($event)"></app-console>
+<app-console [isOpen]="headbar.isServerConsoleOpen" [messageObservable]="serverConsole"></app-console>
 <app-user-management></app-user-management>
 <mat-divider [vertical]="true"></mat-divider>
 <div #wrapper class="site-component--wrapper">
     <router-outlet></router-outlet>
 </div>
+<app-console [isOpen]="headbar.isClientConsoleOpen" [messageObservable]="clientConsole"></app-console>

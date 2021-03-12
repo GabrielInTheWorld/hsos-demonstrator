@@ -1,20 +1,21 @@
 .console--wrapper {
-    overflow-y: scroll;
-    // position: absolute;
-    // left: 0;
-    // top: 0;
+    overflow: hidden;
     width: 350px;
     height: 100%;
     background-color: gray;
-    color: greenyellow;
+    color: white;
     word-wrap: break-word;
 
-    .console--message {
-        padding: 8px;
-        white-space: pre-line;
+    .console {
+        height: 100%;
+        .console--message {
+            height: 40px;
+            padding: 8px;
+            white-space: pre-line;
 
-        &:hover {
-            background-color: #333;
+            &:hover {
+                background-color: #333;
+            }
         }
     }
 }

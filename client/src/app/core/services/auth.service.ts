@@ -63,7 +63,7 @@ export class AuthService {
     }
 
     public async login(credentials: { username: string }): Promise<any> {
-        const answer = await this.http.post<LoginAnswer>('/login', credentials);
+        const answer = await this.http.post<LoginAnswer>('/confirm-login', credentials);
         if (answer.success) {
             this.router.navigate(['']);
         } else {

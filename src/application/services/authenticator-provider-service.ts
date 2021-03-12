@@ -1,15 +1,15 @@
-import { FidoAuthenticator } from './../util/authentication/implementations/fido-authenticator';
-import { MissingAuthenticationException } from './../model-layer/core/exceptions/missing-authentication-exception';
+import { AuthenticationCredential } from '../model-layer/core/models/authentication/authentication-credential';
 import { AuthenticationException } from './../model-layer/core/exceptions/authentication-exception';
+import { AuthenticationType } from '../model-layer/core/models/authentication/authentication-types';
+import { Authenticator } from '../util/authentication/interfaces/authenticator';
+import { AuthenticatorProvider } from '../interfaces/authenticator-provider';
+import { EmailAuthenticator } from './../util/authentication/implementations/email-authenticator';
+import { FidoAuthenticator } from './../util/authentication/implementations/fido-authenticator';
+import { Logger } from './logger';
+import { MissingAuthenticationException } from './../model-layer/core/exceptions/missing-authentication-exception';
 import { PasswordAuthenticator } from './../util/authentication/implementations/password-authenticator';
 import { TotpAuthenticator } from './../util/authentication/implementations/totp-authenticator';
-import { EmailAuthenticator } from './../util/authentication/implementations/email-authenticator';
-import { AuthenticatorProvider } from '../interfaces/authenticator-provider';
 import { User } from '../model-layer/core/models/user';
-import { AuthenticationCredential } from '../model-layer/user/authentication-credential';
-import { AuthenticationType } from '../model-layer/user/authentication-types';
-import { Authenticator } from '../util/authentication/interfaces/authenticator';
-import { Logger } from './logger';
 
 export class AuthenticatorProviderService implements AuthenticatorProvider {
   private readonly authenticators: { [key in AuthenticationType]?: Authenticator } = {
@@ -20,7 +20,6 @@ export class AuthenticatorProviderService implements AuthenticatorProvider {
   };
 
   public async readAuthenticationValues(user: User, values: AuthenticationCredential): Promise<void> {
-    Logger.warn('readAuthenticationValues');
     const missingTypes: { [key in AuthenticationType]?: { [key: string]: any } } = {};
 
     if (!Object.keys(this.authenticators).length) {
@@ -31,6 +30,7 @@ export class AuthenticatorProviderService implements AuthenticatorProvider {
         throw new AuthenticationException(`Authenticator ${key} not provided!`);
       }
       const result = await this.authenticators[key]?.isAuthenticationTypeMissing(user, values[key]);
+      Logger.debug('Result from authenticationType:', result);
       if (result?.missing) {
         missingTypes[key] = result.additionalData;
       }
@@ -56,8 +56,4 @@ export class AuthenticatorProviderService implements AuthenticatorProvider {
   public getAvailableAuthenticationTypes(): AuthenticationType[] {
     return Object.keys(this.authenticators) as AuthenticationType[];
   }
-
-  // public getTotpValidator(): TotpAuthenticator {
-  //   return this.authenticators.totp as TotpAuthenticator;
-  // }
 }

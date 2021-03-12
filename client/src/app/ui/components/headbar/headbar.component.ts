@@ -19,8 +19,12 @@ export class HeadbarComponent implements OnInit {
     @Output()
     public add = new EventEmitter<void>();
 
-    public get isConsoleOpen(): boolean {
-        return this.headbarService.isConsoleOpen;
+    public get isServerConsoleOpen(): boolean {
+        return this.headbarService.isServerConsoleOpen;
+    }
+
+    public get isClientConsoleOpen(): boolean {
+        return this.headbarService.isClientConsoleOpen;
     }
 
     public constructor(private headbarService: HeadbarService) {}
@@ -33,7 +37,11 @@ export class HeadbarComponent implements OnInit {
         this.clickLeftIcon.emit();
     }
 
-    public toggleConsole(): void {
-        this.headbarService.nextSate(!this.headbarService.isConsoleOpen);
+    public toggleClientConsole(): void {
+        this.headbarService.nextClientConsoleState(!this.isClientConsoleOpen);
+    }
+
+    public toggleServerConsole(): void {
+        this.headbarService.nextServerConsoleSate(!this.isServerConsoleOpen);
     }
 }

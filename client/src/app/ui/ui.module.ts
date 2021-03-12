@@ -5,7 +5,6 @@ import { HeadbarComponent } from './components/headbar/headbar.component';
 import { IndicatorComponent } from './components/indicator/indicator.component';
 import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
 import { MaterialModule } from './library/material.module';
-import { PaperComponent } from './components/paper/paper.component';
 import { GridComponent } from './components/grid/grid.component';
 import { CellComponent } from './components/cell/cell.component';
 import { QrCodeComponent } from './components/qr-code/qr-code.component';
@@ -17,7 +16,6 @@ const components = [
     IndicatorComponent,
     LoadingSpinnerComponent,
     HeadbarComponent,
-    PaperComponent,
     GridComponent,
     CellComponent,
     QrCodeComponent,

@@ -1,19 +1,28 @@
-import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
 })
 export class HeadbarService {
-    public get isConsoleOpen(): boolean {
-        return this.consoleStateSubject.value;
+    public get isServerConsoleOpen(): boolean {
+        return this._serverConsoleStateSubject.value;
     }
 
-    private consoleStateSubject = new BehaviorSubject<boolean>(false);
+    public get isClientConsoleOpen(): boolean {
+        return this._clientConsoleStateSubject.value;
+    }
 
-    constructor() {}
+    private readonly _serverConsoleStateSubject = new BehaviorSubject<boolean>(false);
+    private readonly _clientConsoleStateSubject = new BehaviorSubject<boolean>(false);
 
-    public nextSate(isOpen: boolean): void {
-        this.consoleStateSubject.next(isOpen);
+    public constructor() {}
+
+    public nextServerConsoleSate(isOpen: boolean): void {
+        this._serverConsoleStateSubject.next(isOpen);
+    }
+
+    public nextClientConsoleState(isOpen: boolean): void {
+        this._clientConsoleStateSubject.next(isOpen);
     }
 }

@@ -1,13 +1,12 @@
 import { Component, Input, OnInit, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
 import { Base32 } from 'base-coding';
 
 import { BaseComponent } from './../../../../../core/models/base.component';
 import { CryptoService } from './../../../../../core/services/crypto.service';
-import { FidoDialogComponent } from '../fido-dialog/fido-dialog.component';
 import { Authentication } from 'src/app/core/services/auth.service';
 import { User } from './../../models/user';
+import { Logger } from 'src/app/core/utils/logger';
 
 export interface AuthTypeValue {
     email?: string;
@@ -21,7 +20,10 @@ export interface AuthTypeValue {
     styleUrls: ['./user-authentication-type-chooser.component.scss']
 })
 export class UserAuthenticationTypeChooserComponent extends BaseComponent implements OnInit {
-    public readonly authenticationModel = { platform: 'Plattformspezifisch', 'cross-platform': 'Plattformunabhängig' };
+    public readonly authenticationModel = {
+        platform: 'Betriebssystemabhängige Authentifizierung',
+        'cross-platform': 'Authentifizierung mittels externem Token'
+    };
 
     @Input()
     public set selectedAuthenticationTypes(types: string[]) {
@@ -61,11 +63,7 @@ export class UserAuthenticationTypeChooserComponent extends BaseComponent implem
 
     private _username = '';
 
-    public constructor(
-        private readonly fb: FormBuilder,
-        private readonly crypto: CryptoService,
-        private readonly dialog: MatDialog
-    ) {
+    public constructor(private readonly fb: FormBuilder, private readonly crypto: CryptoService) {
         super();
     }
 
@@ -84,20 +82,10 @@ export class UserAuthenticationTypeChooserComponent extends BaseComponent implem
         return this.authTypeForm.value;
     }
 
-    // public async startRegistering(): Promise<void> {
-    //     const dialogRef = this.dialog.open(FidoDialogComponent, {
-    //         disableClose: true,
-    //         width: '400px',
-    //         data: { username: this.username, userId: this.user.userId }
-    //     });
-    //     const result = await dialogRef.afterClosed().toPromise();
-    // }
-
     private prepareTotp(): void {
         if (!this.selectedTypes.includes('totp')) {
             return;
         }
-
         const secret = this.crypto.generateRandomString(128);
         const totpUri = Authentication.otpToUri({
             type: 'totp',
@@ -107,7 +95,7 @@ export class UserAuthenticationTypeChooserComponent extends BaseComponent implem
             period: 30,
             digits: 6
         });
-        console.log('totpUri:', totpUri);
+        Logger.next(`Erstelle TOTP-Uri:`, totpUri);
         this.authTypeForm.patchValue({ totp: totpUri });
     }
 }

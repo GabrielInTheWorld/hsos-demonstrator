@@ -2,10 +2,10 @@
     <div class="headbar--left-side">
         <button
             mat-icon-button
-            (click)="toggleConsole()"
-            [matTooltip]="isConsoleOpen ? 'Schließe Konsole' : 'Öffne Konsole'"
+            (click)="toggleServerConsole()"
+            [matTooltip]="isServerConsoleOpen ? 'Schließe Client-Konsole' : 'Öffne Server-Konsole'"
         >
-            <mat-icon>announcement</mat-icon>
+            <mat-icon>dns</mat-icon>
         </button>
         <button [disabled]="!hasLeftIcon" mat-icon-button (click)="onLeftIconClicked()">
             <mat-icon>{{ hasLeftIcon ? leftIcon : '' }}</mat-icon>
@@ -16,6 +16,13 @@
         <ng-content></ng-content>
     </div>
     <div class="headbar--right-side">
+        <button
+            mat-icon-button
+            (click)="toggleClientConsole()"
+            [matTooltip]="isClientConsoleOpen ? 'Schließe Client-Konsole' : 'Öffne Client-Konsole'"
+        >
+            <mat-icon>announcement</mat-icon>
+        </button>
         <ng-content select="[right-side]"></ng-content>
     </div>
 </mat-toolbar>

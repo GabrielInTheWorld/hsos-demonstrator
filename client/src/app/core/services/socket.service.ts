@@ -2,6 +2,7 @@ import { OfflineService } from './offline.service';
 import { EventMap, EventMessage } from './../utils/event-map';
 import { Injectable, NgZone } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
+import { Logger } from '../utils/logger';
 
 interface IdentificationObject {
     id: string;
@@ -51,12 +52,6 @@ export class SocketService {
         const port = window.location.port;
         this.websocketUri = `${protocol === 'https:' ? 'wss' : 'ws'}://${location}:${port === '4200' ? '8000' : port}`;
         this.connectToWebsocket(this.websocketUri);
-        this.fromEvent<IdentificationObject>('id').subscribe(obj => {
-            if (obj) {
-                console.log('id', obj);
-                this.identification = obj.id;
-            }
-        });
     }
 
     public emit<T, R>(eventName: string, data?: T, to?: string): Observable<R> {
@@ -69,7 +64,6 @@ export class SocketService {
     private send(type: string, message: any, to: string = null): void {
         if (!this.isConnected && this.websocket) {
             this.websocket.close();
-            // this.zone.run(() => this.onClose());
         }
         if (!this.isConnected) {
             return;
@@ -86,38 +80,34 @@ export class SocketService {
     private parseMessage(event: any): void {
         try {
             const message: EventMessage = JSON.parse(event.data) as EventMessage;
-            console.log('parsed message:', message);
-            console.log('parsed message data:', message.data);
             this.mapEvents.pushMessage(message.event, message.data);
         } catch {
-            console.log('message could not be parsed:', event);
+            Logger.next('Nachricht enthält kein gültiges JSON-Format:', event.data);
         }
     }
 
     private connectToWebsocket(wsUri: string): void {
-        console.log('connect to uri', wsUri);
+        Logger.next('Verbinde unter:', wsUri);
         this.websocket = new WebSocket(wsUri, 'echo-protocol');
 
         this.websocket.onopen = event => {
-            console.log('connected!', event);
+            Logger.next('Verbunden!');
             this.reconnectTries = 0;
             this.offlineService.nextOfflineState(false);
             this.websocketConnectionSubject.next(true);
         };
 
-        this.websocket.onclose = event => {
-            console.log('closing', event);
+        this.websocket.onclose = () => {
             this.websocketConnectionSubject.next(false);
             this.zone.run(() => this.onClose());
         };
 
         this.websocket.onerror = event => {
-            console.log('Error:', event);
+            Logger.next('Ein Fehler bei der TCP-Verbindung ist aufgetreten...', 'Verbinde neu...');
             this.websocket.close();
         };
 
         this.websocket.onmessage = event => {
-            console.log('onmessage', event);
             this.parseMessage(event);
         };
     }
@@ -133,11 +123,11 @@ export class SocketService {
             if (this.reconnectTries < 3) {
                 this.reconnectTries += 1;
             } else {
-                console.log('You are offline.');
+                Logger.next('Wir sind offline.');
                 this.offlineService.nextOfflineState(true);
             }
         } catch (error) {
-            console.log('error', error);
+            Logger.next('Ein Fehler ist aufgetreten:', error.message);
         }
     }
 }

@@ -1,4 +1,3 @@
-import { AuthenticationType } from './authentication-types';
 import { User } from '../core/models/user';
 
 export abstract class UserHandler {
@@ -8,6 +7,5 @@ export abstract class UserHandler {
   public abstract getUserByUserId(userId: string): Promise<User>;
   public abstract getAllUsers(): Promise<User[]>;
   public abstract hasUser(username: string): Promise<boolean>;
-  public abstract setDefaultAuthenticationTypes(types: AuthenticationType[]): Promise<void>;
   public abstract reset(): Promise<void>;
 }

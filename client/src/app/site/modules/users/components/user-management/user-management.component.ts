@@ -6,6 +6,7 @@ import { PromptDialogService } from './../../../../../ui/services/prompt-dialog.
 import { User } from './../../models/user';
 import { UserDetailDialogComponent } from '../user-detail-dialog/user-detail-dialog.component';
 import { UsersService } from '../../services/users.service';
+import { Logger } from 'src/app/core/utils/logger';
 
 @Component({
     selector: 'app-user-management',
@@ -46,13 +47,13 @@ export class UserManagementComponent extends BaseComponent implements OnInit, On
     }
 
     public async deleteUser(user: User): Promise<void> {
-        console.log('user', user);
         const answer = await this.promptService.open(
             `Benutzer ${user.username} löschen`,
             'Möchten Sie den Benutzer löschen?'
         );
         if (answer) {
             await this.userService.delete(user);
+            Logger.next(`Lösche Benutzer ${user.username}`);
         }
     }
 
@@ -77,7 +78,6 @@ export class UserManagementComponent extends BaseComponent implements OnInit, On
             }
         });
         const result = await dialogRef.afterClosed().toPromise();
-        console.log('result', result);
         return result;
     }
 }

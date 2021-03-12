@@ -1,53 +1,88 @@
-import { HeadbarService } from './../../../ui/services/headbar.service';
-import { AfterViewInit, Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { CdkVirtualScrollViewport, ExtendedScrollToOptions } from '@angular/cdk/scrolling';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    Input,
+    OnInit,
+    ViewChild
+} from '@angular/core';
+import { Observable } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
+
 import { BaseComponent } from 'src/app/core/models/base.component';
-
-import { ConsoleService } from '../../services/console.service';
-
-const SCROLL_BAR_WIDTH = 15;
 
 @Component({
     selector: 'app-console',
     templateUrl: './console.component.html',
-    styleUrls: ['./console.component.scss']
+    styleUrls: ['./console.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConsoleComponent extends BaseComponent implements OnInit, AfterViewInit {
     @ViewChild('consoleWrapper')
     public readonly consoleWrapper: ElementRef<HTMLDivElement>;
 
-    @Output()
-    public changeWidth = new EventEmitter<number>();
+    @ViewChild(CdkVirtualScrollViewport)
+    public virtualScrollViewport?: CdkVirtualScrollViewport;
+
+    @Input()
+    public set isOpen(opened: boolean) {
+        this._isOpen = opened;
+        setTimeout(() => this.scrollToBottom(), 10);
+    }
 
     public get isOpen(): boolean {
-        return this.headbarService.isConsoleOpen;
+        return this._isOpen;
     }
 
-    public get messages(): string[] {
-        return this._messages;
-    }
+    @Input()
+    public messageObservable: Observable<string[]>;
 
-    private _messages: string[] = [];
+    public messages: string[] = [];
 
-    public constructor(
-        private readonly consoleService: ConsoleService,
-        private readonly headbarService: HeadbarService
-    ) {
+    private _isOpen = false;
+
+    public constructor(private cd: ChangeDetectorRef) {
         super();
     }
 
     public ngOnInit(): void {
-        this.subscriptions.push(
-            this.consoleService.getMessageObservable().subscribe(messages => {
-                const copy = [...messages];
-                this._messages = copy.reverse();
-            })
-        );
+        if (this.messageObservable) {
+            this.subscriptions.push(
+                this.messageObservable
+                    .pipe(
+                        map(messages => messages.join(' ')),
+                        filter(message => !!message)
+                    )
+                    .subscribe(message => {
+                        setTimeout(() => (this.messages = this.messages.concat(message)));
+                        this.scrollToBottom();
+                        this.cd.markForCheck();
+                    })
+            );
+        }
     }
 
     public ngAfterViewInit(): void {
-        if (!this.consoleWrapper) {
+        this.scrollToBottom();
+    }
+
+    public trackByIndex(index: number): number {
+        return index;
+    }
+
+    private scrollToBottom(): void {
+        if (!this.virtualScrollViewport || !this.isOpen) {
             return;
         }
-        this.changeWidth.emit(this.consoleWrapper.nativeElement.clientWidth + SCROLL_BAR_WIDTH);
+        const scrollTarget: ExtendedScrollToOptions = {
+            bottom: 0,
+            behavior: 'smooth'
+        };
+        setTimeout(() => {
+            this.virtualScrollViewport.scrollTo(scrollTarget);
+        }, 10);
     }
 }

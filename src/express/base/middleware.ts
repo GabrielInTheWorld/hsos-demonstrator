@@ -1,8 +1,11 @@
 import { Response } from 'express';
 
 import { AuthHandler } from '../../application/interfaces/auth-handler';
-import { HttpData } from '../../application/services/http-service';
 import { Logger } from '../../application/services/logger';
+
+export interface HttpData {
+  [key: string]: any;
+}
 
 export abstract class Middleware {
   protected sendResponse(

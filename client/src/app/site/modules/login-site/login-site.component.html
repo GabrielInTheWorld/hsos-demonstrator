@@ -18,33 +18,42 @@
     <ng-container *ngIf="!!requiredAuthenticationFactors.length">
         <h2>Geben Sie zur Authentifizierung folgende Faktoren ein:</h2>
         <form [formGroup]="authForm" (appConfirmOnEnter)="confirmLogin()">
-            <mat-form-field *ngIf="requiredAuthenticationFactors.includes('password')">
-                <input
-                    matInput
-                    formControlName="password"
-                    placeholder="Password"
-                    [type]="isVisible ? 'text' : 'password'"
-                    [appAutofocus]="true"
-                />
-                <button matSuffix mat-icon-button (click)="isVisible = !isVisible">
-                    <mat-icon>{{ isVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
-                </button>
-            </mat-form-field>
-            <mat-form-field *ngIf="requiredAuthenticationFactors.includes('email')">
-                <mat-label>Geben Sie den Code ein, den Sie mittels einer E-Mail erhalten haben:</mat-label>
-                <input matInput formControlName="email" placeholder="Code" [appAutofocus]="true" />
-            </mat-form-field>
-            <mat-form-field *ngIf="requiredAuthenticationFactors.includes('totp')">
-                <mat-label>Geben Sie den aktuellen Code ein:</mat-label>
-                <input matInput formControlName="totp" placeholder="Code" [appAutofocus]="true" />
-            </mat-form-field>
+            <ng-container *ngIf="requiredAuthenticationFactors.includes('password')">
+                <h3>Ihr Passwort</h3>
+                <mat-form-field>
+                    <input
+                        matInput
+                        formControlName="password"
+                        placeholder="Password"
+                        [type]="isVisible ? 'text' : 'password'"
+                        [appAutofocus]="true"
+                    />
+                    <button matSuffix mat-icon-button (click)="isVisible = !isVisible">
+                        <mat-icon>{{ isVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    </button>
+                </mat-form-field>
+            </ng-container>
+            <ng-container *ngIf="requiredAuthenticationFactors.includes('email')">
+                <h3>Ein HOTP, das an Ihre E-Mail-Adresse gesendet wurde</h3>
+                <mat-form-field>
+                    <mat-label>Geben Sie den Code ein, den Sie mittels einer E-Mail erhalten haben:</mat-label>
+                    <input matInput formControlName="email" placeholder="Code" [appAutofocus]="true" />
+                </mat-form-field>
+            </ng-container>
+            <ng-container *ngIf="requiredAuthenticationFactors.includes('totp')">
+                <h3>Aktuelles TOTP von Ihrem Smartphone</h3>
+                <mat-form-field>
+                    <mat-label>Geben Sie den aktuellen Code ein:</mat-label>
+                    <input matInput formControlName="totp" placeholder="Code" [appAutofocus]="true" />
+                </mat-form-field>
+            </ng-container>
         </form>
         <ng-container *ngIf="requiredAuthenticationFactors.includes('fido')">
+            <h3>FIDO Login</h3>
             <div class="flex-center fido-container">
-                <h3>Fido:</h3>
+                <h3>Fido-Response:</h3>
                 <mat-icon>{{ fidoCredentials ? 'done' : 'close' }}</mat-icon>
             </div>
-            <!-- <app-fido-login [username]="username" [data]="requiredAuthenticationData"></app-fido-login> -->
         </ng-container>
         <div>
             <button mat-raised-button color="primary" [disabled]="authForm.invalid" (click)="confirmLogin()">

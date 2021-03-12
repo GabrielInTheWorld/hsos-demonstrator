@@ -6,6 +6,7 @@ import { HttpService } from 'src/app/core/services/http.service';
 import { SocketService } from 'src/app/core/services/socket.service';
 import { User } from './../models/user';
 import { FidoAuthenticatorService } from './fido-authenticator.service';
+import { Logger } from 'src/app/core/utils/logger';
 
 // tslint:disable-next-line: variable-name
 export const AuthenticationTypeVerboseName = {
@@ -27,12 +28,7 @@ export class UsersService {
     private readonly userSubject = new BehaviorSubject<User[]>([]);
     private readonly authenticationTypeSubject = new BehaviorSubject<string[]>([]);
 
-    public constructor(
-        private readonly http: HttpService,
-        private readonly websocket: SocketService,
-        private readonly dialog: MatDialog,
-        private readonly fido: FidoAuthenticatorService
-    ) {
+    public constructor(private readonly websocket: SocketService, private readonly fido: FidoAuthenticatorService) {
         this.initWebsocketEvents();
     }
 
@@ -52,12 +48,8 @@ export class UsersService {
         if (!user) {
             return;
         }
+        Logger.next('Erstelle Benutzer: ', user);
         this.websocket.emit('create-user', user);
-        if (user.authenticationTypes.includes('fido')) {
-            // const config = { ...webAuthnConfig, username: user.username };
-            // const result = new WebAuthnApp(config).register();
-            // console.log('result:', result);
-        }
     }
 
     public async update(userId: string, user: Partial<User>): Promise<void> {
@@ -102,9 +94,5 @@ export class UsersService {
                 this.authenticationTypeSubject.next(types);
             }
         });
-        // this.websocket.fromEvent('fido-register').subscribe(answer => {
-        //     console.log('answer from server:', answer)
-
-        // })
     }
 }

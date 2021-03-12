@@ -1,6 +1,5 @@
 import jwt, { TokenExpiredError } from 'jsonwebtoken';
 
-import { anonymous } from '../model-layer/core/models/anonymous';
 import { BaseException } from '../model-layer/core/exceptions/base-exception';
 import { Factory, Inject } from '../model-layer/core/modules/decorators';
 import { KeyHandler } from '../../express/interfaces/key-handler';
@@ -14,7 +13,7 @@ import { TicketHandler } from '../interfaces/ticket-handler';
 import { User } from '../model-layer/core/models/user';
 import { UserHandler } from '../model-layer/user/user-handler';
 import { UserService } from '../model-layer/user/user-service';
-import { Validation } from '../interfaces/validation';
+import { Validation } from '../model-layer/core/models/validation';
 import { ValidationException } from '../model-layer/core/exceptions/validation-exception';
 
 export class TicketService extends TicketHandler {
@@ -36,12 +35,6 @@ export class TicketService extends TicketHandler {
   private get tokenKey(): string {
     return this.keyHandler.getTokenKey();
   }
-
-  // private readonly anonymousMessage = {
-  //   isValid: true,
-  //   message: 'Successful',
-  //   reason: 'anonymous'
-  // };
 
   public verifyCookie(cookieAsString: string): Validation<Cookie> {
     try {
@@ -88,9 +81,6 @@ export class TicketService extends TicketHandler {
   }
 
   public async refresh(cookieAsString?: string): Promise<Validation<Ticket>> {
-    // if (!cookieAsString) {
-    //   return this.anonymousMessage; // login as guest
-    // }
     if (!cookieAsString || !this.isBearer(cookieAsString)) {
       return { isValid: false, message: 'Wrong token' };
     }
@@ -104,7 +94,6 @@ export class TicketService extends TicketHandler {
     }
     try {
       const userId = await this.sessionHandler.getUserIdBySessionId(cookie.sessionId);
-      console.log('userId', userId);
       const userResult = await this.userHandler.getUserByUserId(userId);
       if (!userResult) {
         this.sessionHandler.clearSessionById(cookie.sessionId);
@@ -123,14 +112,12 @@ export class TicketService extends TicketHandler {
   }
 
   public async validateTicket(tokenString: string, cookieString: string): Promise<Validation<Token>> {
-    Logger.debug('ValidateTicket', tokenString, cookieString);
     try {
       this.checkJwtIsBearer(tokenString, 'Access-Token');
       this.checkJwtIsBearer(cookieString, 'Refresh-Id');
       await this.checkSessionOfTicket(tokenString, cookieString);
       return this.checkAndRefreshToken(tokenString, cookieString);
     } catch (e) {
-      Logger.debug('Validation failed: ', e);
       if (e instanceof NullPointerException) {
         return { isValid: false, message: e.message };
       }

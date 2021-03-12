@@ -34,6 +34,7 @@ export class EmailAuthenticator extends BaseAuthenticator {
   }
 
   private sendEmailWithHotp(email: string, hotp: string): void {
+    Logger.log(`Sende an ${email} eine E-Mail mit folgendem HOTP: ${hotp}`);
     this.sendMailFn(
       {
         from: 'no-reply@demonstrator.com',

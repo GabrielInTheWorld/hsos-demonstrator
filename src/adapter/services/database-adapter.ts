@@ -33,7 +33,6 @@ export class DatabaseAdapter extends DatabasePort {
   }
 
   public async keys(prefix: string): Promise<string[]> {
-    Logger.debug('Search through keys:', this.getPrefix(prefix));
     const docResponse = await this.doPromise(
       'keys',
       this.database.allDocs({
@@ -54,7 +53,6 @@ export class DatabaseAdapter extends DatabasePort {
    * @returns The key of the stored object.
    */
   public async set<T>(prefix: string, key: string, obj: T): Promise<string> {
-    Logger.debug('Store new entry with: ', prefix, key, obj);
     const prefixedKey = this.getPrefixedKey(prefix, key);
     const existingDoc = await this.doPromise('set', this.database.get<T>(this.getPrefixedKey(prefix, key)));
     let update: any = {
@@ -67,9 +65,8 @@ export class DatabaseAdapter extends DatabasePort {
     } else {
       update[prefixedKey] = obj;
     }
-    console.log('store entry', update);
     await this.doPromise('insert', this.database.put(update));
-    await this.doPromise('get', this.get(prefix, key)).then(value => console.log('stored entry:', value));
+    await this.doPromise('get', this.get(prefix, key));
     return prefixedKey;
   }
 
@@ -86,26 +83,19 @@ export class DatabaseAdapter extends DatabasePort {
     modelConstructor?: Constructor,
     defaultValue: any = {}
   ): Promise<DTO<T>> {
-    Logger.debug('Get entry by key: ', key);
-    Logger.debug('Prefixed key: ', this.getPrefixedKey(prefix, key));
     const result = await this.database
       .get(this.getPrefixedKey(prefix, key))
       .then(value => value)
       .catch(() => null);
-    Logger.debug('Get result:', result);
     if (modelConstructor && result) {
-      Logger.debug('ModelConstructor && result');
       return new modelConstructor(result) as DTO<T>;
     }
     if (result && (result as any)[this.getPrefixedKey(prefix, key)]) {
-      Logger.debug('result && key is in result');
       return (result as any)[this.getPrefixedKey(prefix, key)];
     }
     if (result) {
-      Logger.debug('Only result');
       return result as DTO<T>;
     }
-    Logger.debug('Nothing');
     return defaultValue as DTO<T>;
   }
 
@@ -164,10 +154,6 @@ export class DatabaseAdapter extends DatabasePort {
         endkey: `${this.getPrefix(prefix)}\ufff0`
       })
     );
-    console.log(
-      'docResponse:',
-      docResponse.rows.map(row => row.doc)
-    );
     return docResponse.rows.map(row => row.doc as any);
   }
 
@@ -187,25 +173,7 @@ export class DatabaseAdapter extends DatabasePort {
     return `${this.getPrefix(prefix)}:${key}`;
   }
 
-  //   private convertDocToObject<T>(result: PouchDB.Core.ExistingDocument<any>, modelConstructor?: Constructor): T {
-  // if (modelConstructor && result) {
-  //       Logger.debug('ModelConstructor && result');
-  //       return new modelConstructor(result) as DTO<T>;
-  //     }
-  //     if (result && (result as any)[this.getPrefixedKey(prefix, key)]) {
-  //       Logger.debug('result && key is in result');
-  //       return (result as any)[this.getPrefixedKey(prefix, key)];
-  //     }
-  //     if (result) {
-  //       Logger.debug('Only result');
-  //       return result as DTO<T>;
-  //     }
-  //     Logger.debug('Nothing');
-  //     return defaultValue as DTO<T>;
-  //   }
-
   private async doPromise<T>(name: string, promise: Promise<T>): Promise<T> {
-    Logger.debug(`Fulfill promise: ${name}`);
     try {
       return await promise;
     } catch (e) {

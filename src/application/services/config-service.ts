@@ -1,6 +1,6 @@
 import { WebsocketHandler } from 'reactive-websocket';
 
-import { AuthenticationType } from '../model-layer/user/authentication-types';
+import { AuthenticationType } from '../model-layer/core/models/authentication/authentication-types';
 import { AuthenticatorProvider } from '../interfaces/authenticator-provider';
 import { AuthenticatorProviderService } from './authenticator-provider-service';
 import { Inject } from '../model-layer/core/modules/decorators';

@@ -1,3 +1,5 @@
+import { Observable, BehaviorSubject } from 'rxjs';
+
 export enum LogColor {
   Reset = '\x1b[0m',
   Bright = '\x1b[1m',
@@ -28,6 +30,8 @@ export enum LogColor {
 }
 
 export class Logger {
+  private static readonly _logMessageSubject = new BehaviorSubject<any[]>([]);
+
   private static getTimeString(): string {
     const date = new Date();
     return (
@@ -49,6 +53,7 @@ export class Logger {
   }
 
   public static log(...message: any): void {
+    this._logMessageSubject.next(message);
     this.info(LogColor.FgWhite, ...message);
   }
 
@@ -62,5 +67,9 @@ export class Logger {
 
   public static error(...message: any): void {
     this.info(`${LogColor.FgRed}${LogColor.Bright}`, ...message);
+  }
+
+  public static getLogMessagesObservable(): Observable<any[]> {
+    return this._logMessageSubject.asObservable();
   }
 }

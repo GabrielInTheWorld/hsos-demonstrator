@@ -21,7 +21,7 @@ export default class AuthenticationServer extends BaseServer {
   public name = 'AuthenticationServer';
 
   @Inject(ConfigService)
-  private config: ConfigService;
+  private readonly config: ConfigService;
 
   private app: express.Application;
   private server: Server;
@@ -75,7 +75,7 @@ export default class AuthenticationServer extends BaseServer {
   private corsFunction(req: express.Request, res: express.Response, next: express.NextFunction): void {
     const origin = req.headers.origin;
     const requestingOrigin = Array.isArray(origin) ? origin.join(' ') : origin || '';
-    Logger.debug('RequestingOrigin:', requestingOrigin);
+    Logger.debug('Anfragender Client:', requestingOrigin);
     if (AuthenticationServer.ALLOWED_ORIGINS.indexOf(requestingOrigin) > -1) {
       res.setHeader('Access-Control-Allow-Origin', requestingOrigin);
     }

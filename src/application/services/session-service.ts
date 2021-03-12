@@ -61,7 +61,6 @@ export class SessionService extends SessionHandler {
     const currentSessions: string[] = (await this.userDatabase.get<string[]>(user.userId), []);
     const newSession = Random.cryptoKey();
     currentSessions.push(newSession);
-    Logger.debug('CurrentSessions', currentSessions);
     await Promise.all([
       this.sessionDatabase.set(newSession, user.userId),
       this.userDatabase.set(user.userId, currentSessions)
@@ -70,7 +69,6 @@ export class SessionService extends SessionHandler {
   }
 
   public async getUserIdBySessionId(sessionId: string): Promise<string> {
-    Logger.debug('All active sessions:', await this.sessionDatabase.keys());
     return await this.sessionDatabase.get(sessionId);
   }
 

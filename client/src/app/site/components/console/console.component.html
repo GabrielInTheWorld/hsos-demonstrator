@@ -1,8 +1,8 @@
 <div class="console--wrapper" #consoleWrapper *ngIf="isOpen">
-    <div *ngFor="let message of messages">
-        <div class="console--message">
-            {{ message }}
+    <cdk-virtual-scroll-viewport class="console" itemSize="56">
+        <div *cdkVirtualFor="let message of messages; index as index; trackBy: trackByIndex">
+            <div class="console--message">{{ index + 1 }}: {{ message }}</div>
+            <mat-divider></mat-divider>
         </div>
-        <mat-divider></mat-divider>
-    </div>
+    </cdk-virtual-scroll-viewport>
 </div>

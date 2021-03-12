@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
+import { FidoAuthenticatorService } from '../users/services/fido-authenticator.service';
 import { BaseComponent } from 'src/app/core/models/base.component';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { FidoAuthenticatorService } from '../users/services/fido-authenticator.service';
+import { Logger } from 'src/app/core/utils/logger';
+import { AuthenticationTypeVerboseName } from '../users/services/users.service';
 
 @Component({
     selector: 'app-login-site',
@@ -46,8 +48,12 @@ export class LoginSiteComponent extends BaseComponent implements OnInit {
             return;
         }
         this.username = this.loginForm.get('username').value;
+        Logger.next(`Sende Anmeldeanfrage mit Benutzernamen ${this.username}`);
         const failure = await this.auth.login({ username: this.username });
         if (failure && failure.reason) {
+            Logger.next(
+                `Für eine Authentifizierung fehlen folgende Faktoren: ${this.getVerboseReasons(failure.reason)}`
+            );
             this.requiredAuthenticationFactors = failure.reason;
             this.requiredAuthenticationData = failure.data;
             this.prepareAuthForm();
@@ -75,11 +81,13 @@ export class LoginSiteComponent extends BaseComponent implements OnInit {
     }
 
     public cancel(): void {
+        Logger.next('Abbruch');
         const authForm = {};
         for (const control of Object.keys(this.authForm.controls)) {
             authForm[control] = '';
         }
         this.authForm.setValue(authForm);
+        this.fidoCredentials = null;
         this.requiredAuthenticationFactors = [];
     }
 
@@ -93,10 +101,14 @@ export class LoginSiteComponent extends BaseComponent implements OnInit {
 
     private async prepareFido(): Promise<void> {
         if (this.requiredAuthenticationData.fido) {
+            Logger.next('FIDO-Challenge erhalten. Erstelle Response.');
             const credentials = await this.fido.login(this.requiredAuthenticationData.fido);
-            console.log('credentials', credentials);
             this.fidoCredentials = credentials;
             this.authForm.patchValue({ fido: credentials });
         }
+    }
+
+    private getVerboseReasons(reasons: string[]): string {
+        return reasons.map(reason => AuthenticationTypeVerboseName[reason]).join(', ');
     }
 }

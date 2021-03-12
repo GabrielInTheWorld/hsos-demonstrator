@@ -25,17 +25,4 @@ export interface Authenticator {
    * @param value A value which is given upon the creation process.
    */
   prepareAuthenticationType(user: User, value?: any): Promise<User>;
-
-  /**
-   * @deprecated Do not use! Use `isAuthenticationTypeMissing` instead!
-   * @param user
-   * @param value
-   */
-  checkAuthenticationType(user: User, value?: string): void;
-  /**
-   * @deprecated Do not use!
-   * @param user
-   * @param value
-   */
-  writeAuthenticationType(user: User, value?: string): any;
 }

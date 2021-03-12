@@ -1,6 +1,6 @@
 import { Cookie, Ticket, Token } from '../model-layer/core/models/ticket';
 import { User } from '../model-layer/core/models/user';
-import { Validation } from './validation';
+import { Validation } from '../model-layer/core/models/validation';
 
 export abstract class TicketHandler {
   public abstract verifyCookie(cookieAsString: string): Validation<Cookie>;

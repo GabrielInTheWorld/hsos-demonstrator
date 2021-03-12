@@ -1,7 +1,8 @@
-import { AuthenticationCredential } from './../../user/authentication-credential';
-import { AuthenticationType } from '../../user/authentication-types';
+import { PublicKeyObject } from 'custom-fido-library';
+
+import { AuthenticationCredential } from './authentication/authentication-credential';
+import { AuthenticationType } from './authentication/authentication-types';
 import { BaseModel } from '../base/base-model';
-import { PublicKeyObject } from './fido';
 
 export class User extends BaseModel<User> {
   public static readonly COLLECTIONSTRING = 'user';
@@ -35,18 +36,6 @@ export class User extends BaseModel<User> {
   public readonly totp?: string;
 
   public fido?: PublicKeyObject;
-
-  /**
-   * @deprecated
-   * The property `t0` for generating a totp-token.
-   */
-  public readonly totpT0?: number;
-
-  /**
-   * @deprecated
-   * A secret used for generating a totp-token.
-   */
-  public readonly totpSecret?: string;
 
   /**
    * Property to hold some data for authentication while authenticating.
