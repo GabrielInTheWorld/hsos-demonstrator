@@ -21,7 +21,7 @@ export interface AuthTypeValue {
 })
 export class UserAuthenticationTypeChooserComponent extends BaseComponent implements OnInit {
     public readonly authenticationModel = {
-        platform: 'Betriebssystemabhängige Authentifizierung',
+        // platform: 'Betriebssystemabhängige Authentifizierung', // Currently not working
         'cross-platform': 'Authentifizierung mittels externem Token'
     };
 

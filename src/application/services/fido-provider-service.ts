@@ -38,12 +38,7 @@ export class FidoProviderService {
         userId,
         authenticatorAttachment: attachment
       });
-      const id = userId || Random.id();
-      publicKeyCredentialCreationOptions.user = {
-        id: Base64.encode(id),
-        name: username,
-        displayName: username
-      };
+      const id = publicKeyCredentialCreationOptions.user.id;
       this.pendingRegister[id] = publicKeyCredentialCreationOptions.challenge as string;
       const subscription = this.websocket
         .broadcastAll<any>({

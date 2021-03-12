@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { FidoDialogComponent } from '../components/fido-dialog/fido-dialog.component';
 import { SocketService } from './../../../../core/services/socket.service';
@@ -38,7 +39,11 @@ interface FidoAuthentication {
     providedIn: 'root'
 })
 export class FidoAuthenticatorService {
-    public constructor(private readonly socket: SocketService, private readonly dialog: MatDialog) {
+    public constructor(
+        private readonly socket: SocketService,
+        private readonly dialog: MatDialog,
+        private readonly snackbar: MatSnackBar
+    ) {
         this.socket.fromEvent('fido-register').subscribe((answer: any) => {
             this.onRegister(answer);
         });
@@ -93,6 +98,8 @@ export class FidoAuthenticatorService {
             const credential = await this.onAnswerFromServer(answer.content.publicKeyCredentialCreationOptions);
             content = { credential, userId: answer.content.userId };
         } catch (e) {
+            console.log('Something went wrong:', e);
+            this.snackbar.open('Ihr Gerät ist dafür nicht ausgelegt.', 'Okay', { duration: 2000 });
             content = 'cancel';
         }
         this.dialog.closeAll();
