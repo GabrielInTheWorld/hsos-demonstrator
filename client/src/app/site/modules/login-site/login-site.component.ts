@@ -6,6 +6,7 @@ import { BaseComponent } from 'src/app/core/models/base.component';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { Logger } from 'src/app/core/utils/logger';
 import { AuthenticationTypeVerboseName } from '../users/services/users.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
     selector: 'app-login-site',
@@ -31,7 +32,8 @@ export class LoginSiteComponent extends BaseComponent implements OnInit {
     public constructor(
         private readonly fb: FormBuilder,
         private readonly auth: AuthService,
-        private readonly fido: FidoAuthenticatorService
+        private readonly fido: FidoAuthenticatorService,
+        private readonly matSnackbar: MatSnackBar
     ) {
         super();
     }
@@ -71,6 +73,7 @@ export class LoginSiteComponent extends BaseComponent implements OnInit {
         });
         if (failure) {
             this.errorMessage = failure.message;
+            this.matSnackbar.open(this.errorMessage, 'Okay', { duration: 2000 });
         }
     }
 
