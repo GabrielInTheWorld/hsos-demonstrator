@@ -18,6 +18,7 @@ export class EmailAuthenticator extends BaseAuthenticator {
     }
     const pendingUser = this.currentlyPendingUsers.get(user.userId);
     const hotp = pendingUser?.authenticationCredentials.email as Hotp;
+    Logger.log(`HOTP "${value}" erhalten. HOTP "${hotp.value}" erwartet.`);
     if (!hotp.verify(value)) {
       throw new AuthenticationException('Email code is not correct!');
     }

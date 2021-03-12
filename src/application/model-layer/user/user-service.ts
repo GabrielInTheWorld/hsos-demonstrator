@@ -154,6 +154,7 @@ export class UserService extends UserHandler {
 
   private async resetDatabase(): Promise<void> {
     await this.userDatabase.clear();
+    this.userCounter = 0;
     await this.mockUserData();
   }
 
@@ -223,7 +224,12 @@ export class UserService extends UserHandler {
   }
 
   private async getFirstIdCounter(): Promise<number> {
-    const allUsersDto = (await this.getAllUsersForClient()).map(dto => parseInt(dto.userId, 10));
-    return Math.max(...allUsersDto);
+    const allUsers = await this.getAllUsersForClient();
+    if (allUsers.length) {
+      const allUsersDto = allUsers.map(dto => parseInt(dto.userId, 10));
+      return Math.max(...allUsersDto);
+    } else {
+      return 0;
+    }
   }
 }

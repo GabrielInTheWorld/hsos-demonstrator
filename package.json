@@ -7,13 +7,17 @@
   "scripts": {
     "start": "electron-forge start",
     "dev": "nodemon src/index.ts",
-    "build": "npm run build-ts && npm run build-client && npm run make:packager",
+    "electron": "electron .",
+    "postinstall": "cd client && ngcc && cd .. && electron-builder install-app-deps",
+    "build": "npm run build-ts && npm run build-client",
     "build-ts": "tsc",
-    "build-client": "cd client && npm run build && cd ..",
+    "build-client": "cd client && npm run build:electron && cd ..",
     "package": "electron-forge package",
-    "make": "electron-forge make",
+    "make": "npm run build && npm run make:builder",
     "publish": "electron-forge publish",
-    "make:packager": "electron-packager . --platform=linux,win32 --arch=x64 --out=./out",
+    "make:packager": "electron-packager . --platform=linux,win32 --arch=x64 --out=./out --asar --overwrite",
+    "make:builder-package": "electron-builder --dir",
+    "make:builder": "electron-builder",
     "lint": "echo \"No linting configured\""
   },
   "keywords": [],
@@ -22,45 +26,25 @@
     "email": "meyergabriel@live.de"
   },
   "license": "MIT",
-  "config": {
-    "forge": {
-      "packagerConfig": {},
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "demonstrator"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin",
-            "linux"
-          ]
-        }
-      ]
-    }
-  },
   "dependencies": {
-    "axios": "^0.21.1",
     "base-coding": "^1.0.3",
     "bignumber.js": "^9.0.1",
     "body-parser": "^1.19.0",
     "cbor": "^7.0.2",
-    "cbor-sync": "^1.0.4",
     "cookie-parser": "^1.4.5",
     "crypto-random-string": "^3.2.0",
+    "custom-fido-library": "^1.0.2",
     "electron-squirrel-startup": "^1.0.0",
     "express": "^4.17.1",
-    "fido2-library": "^2.5.2",
     "final-otp": "^1.0.3",
     "jsonwebtoken": "^8.5.1",
+    "jwk-to-pem": "^2.0.4",
     "pouchdb": "^7.2.1",
     "pouchdb-adapter-memory": "^7.2.1",
     "pouchdb-find": "^7.2.2",
     "reactive-websocket": "^1.0.4",
     "reflect-metadata": "^0.1.13",
+    "rxjs": "^6.6.6",
     "sendmail": "^1.6.1",
     "sha.js": "^2.4.11",
     "ts-node": "^8.10.1",
@@ -77,12 +61,14 @@
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.3",
     "@types/jsonwebtoken": "^8.3.8",
+    "@types/jwk-to-pem": "^2.0.0",
     "@types/node": "^14.14.31",
     "@types/pouchdb": "^6.4.0",
     "@types/sendmail": "^1.4.2",
     "@types/sha.js": "^2.4.0",
     "@types/websocket": "^1.0.1",
     "electron": "12.0.0",
+    "electron-builder": "^22.10.5",
     "nodemon": "^2.0.2",
     "prettier": "^1.19.1",
     "tslint": "^6.1.1",

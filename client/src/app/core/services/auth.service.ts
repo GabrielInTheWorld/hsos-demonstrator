@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Logger } from '../utils/logger';
 
 import { AuthTokenService } from './auth-token.service';
 import { HttpService, Answer } from './http.service';
@@ -75,6 +76,10 @@ export class AuthService {
         username: string,
         additional: { password?: string; totp?: string; email?: string }
     ): Promise<any> {
+        const additionalAsString = Object.entries(additional)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join(', ');
+        Logger.next(`Sende folgende Faktoren zum Server:`, additionalAsString);
         const answer = await this.http.post<LoginAnswer>('/confirm-login', { username, ...additional });
         if (answer.success) {
             this.router.navigate(['']);

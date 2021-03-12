@@ -1,0 +1,30 @@
+{
+  "productName": "Demonstrator",
+  "asar": true,
+  "directories": {
+    "output": "./dist"
+  },
+  "files": [
+    "build",
+    "client/dist",
+    "electron",
+    "!node_modules/rxjs",
+    "!client/node_modules/tslib",
+    "!client/node_modules/rxjs",
+    "!client/node_modules/zone.js",
+    "!client/node_modules/@angular",
+    "!client/node_modules/@ngx-pwa"
+  ],
+  "win": {
+    "icon": "src/assets/hsos-logo.png",
+    "target": ["nsis", "portable"]
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true
+  },
+  "linux": {
+    "icon": "src/assets/hsos-logo.png",
+    "target": ["AppImage"]
+  }
+}

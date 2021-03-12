@@ -4,8 +4,8 @@
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
-        "build": "ng build",
-        "build:electron": "ng build --base-href .",
+        "build": "ng build --prod",
+        "build:electron": "ng build --prod --base-href .",
         "test": "ng test",
         "lint": "ng lint",
         "e2e": "ng e2e",
