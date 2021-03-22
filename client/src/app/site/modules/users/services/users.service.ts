@@ -5,6 +5,16 @@ import { SocketService } from 'src/app/core/services/socket.service';
 import { User } from './../models/user';
 import { Logger } from 'src/app/core/utils/logger';
 
+namespace UserEvents {
+    export const CREATE = 'create-user';
+    export const GET = 'get-user';
+    export const DELETE = 'delete-user';
+    export const UPDATE = 'update-user';
+    export const GET_ALL = 'all-users';
+    export const RESET_DATABASE = 'reset-database';
+    export const ALL_AUTHENTICATION_TYPES = 'all-authentication-types';
+}
+
 // tslint:disable-next-line: variable-name
 export const AuthenticationTypeVerboseName = {
     password: 'Passwort',
@@ -49,26 +59,27 @@ export class UsersService {
         }
         Logger.next('Erstelle Benutzer: ', user);
         this.currentUserToCreate = user;
-        this.websocket.emit('create-user', user);
+        this.websocket.emit(UserEvents.CREATE, user);
     }
 
     public async update(userId: string, user: Partial<User>): Promise<void> {
         if (!user) {
             return;
         }
-        this.websocket.emit('update-user', { ...user, userId });
+        this.websocket.emit(UserEvents.UPDATE, { ...user, userId });
     }
 
     public async delete(user: User): Promise<void> {
         if (!user) {
             return;
         }
-        this.websocket.emit('delete-user', user.userId);
+        this.websocket.emit(UserEvents.DELETE, user.userId);
     }
 
     public async getUser(userId: string): Promise<User> {
         return new Promise(resolve => {
-            this.websocket.emit<string, User>('get-user', userId).subscribe(_user => {
+            this.websocket.cleanEvents(UserEvents.GET);
+            this.websocket.emit<string, User>(UserEvents.GET, userId).subscribe(_user => {
                 if (!_user) {
                     return;
                 }
@@ -79,7 +90,7 @@ export class UsersService {
 
     public async resetDatabase(): Promise<void> {
         return new Promise(resolve => {
-            this.websocket.emit('reset-database').subscribe(() => resolve());
+            this.websocket.emit(UserEvents.RESET_DATABASE).subscribe(() => resolve());
         });
     }
 
@@ -89,12 +100,12 @@ export class UsersService {
     }
 
     private initWebsocketEvents(): void {
-        this.websocket.emit('all-users').subscribe(allUsers => {
+        this.websocket.emit(UserEvents.GET_ALL).subscribe(allUsers => {
             if (allUsers && Array.isArray(allUsers)) {
                 this.userSubject.next(allUsers);
             }
         });
-        this.websocket.emit('all-authentication-types').subscribe(types => {
+        this.websocket.emit(UserEvents.ALL_AUTHENTICATION_TYPES).subscribe(types => {
             if (types && Array.isArray(types)) {
                 this.authenticationTypeSubject.next(types);
             }

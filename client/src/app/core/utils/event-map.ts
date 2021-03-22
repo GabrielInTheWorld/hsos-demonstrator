@@ -19,6 +19,10 @@ export class EventMap {
         return this.createObservable(this.getSubject<T>(eventName));
     }
 
+    public cleanEvent(eventName: string): void {
+        this.map.delete(eventName);
+    }
+
     private getSubject<T>(eventName: string): BehaviorSubject<T> {
         let observable = this.map.get(eventName);
         if (!observable) {

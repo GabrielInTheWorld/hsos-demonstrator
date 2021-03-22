@@ -69,10 +69,10 @@ export class UserAuthenticationTypeChooserComponent extends BaseComponent implem
 
     public ngOnInit(): void {
         this.authTypeForm = this.fb.group({
-            email: [this.user?.email || '', Validators.email],
-            totp: this.user?.totp || '',
+            email: [this.user?.email.email || '', Validators.email],
+            totp: this.user?.totp.raw || '',
             password: this.user?.password || '',
-            fido: this.user?.fido || 'cross-platform'
+            fido: 'cross-platform'
         });
         this.formChange.emit(this.authTypeForm.value); // emitting initial value
         this.subscriptions.push(this.authTypeForm.valueChanges.subscribe(value => this.formChange.emit(value)));
@@ -96,6 +96,10 @@ export class UserAuthenticationTypeChooserComponent extends BaseComponent implem
             digits: 6
         });
         Logger.next(`Erstelle TOTP-Uri:`, totpUri);
+        if (!this.authTypeForm) {
+            console.warn('Auth type form is not yet available');
+            return;
+        }
         this.authTypeForm.patchValue({ totp: totpUri });
     }
 }

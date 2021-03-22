@@ -77,6 +77,12 @@ export class SocketService {
         return this.mapEvents.fromEvent(eventName);
     }
 
+    public cleanEvents(...events: string[]): void {
+        for (const event of events) {
+            this.mapEvents.cleanEvent(event);
+        }
+    }
+
     private parseMessage(event: any): void {
         try {
             const message: EventMessage = JSON.parse(event.data) as EventMessage;
