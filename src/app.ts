@@ -5,7 +5,6 @@ import 'reflect-metadata';
 import AuthenticationServer from './express/server/authentication-server';
 import { BaseServer } from './express/interfaces/base-server';
 import { Factory, Inject } from './application/model-layer/core/modules/decorators';
-import { FidoProviderService } from './application/services/fido-provider-service';
 import { Logger } from './application/services/logger';
 import { MessageHandler } from './application/interfaces/message-handler';
 import { MessageService } from './application/services/message-service';
@@ -29,9 +28,6 @@ export class Application {
 
   @Inject(WebsocketUserService)
   private readonly websocketUserService: WebsocketUserService;
-
-  @Inject(FidoProviderService)
-  private readonly fidoService: FidoProviderService;
 
   public start(): Server {
     const server = this.httpServer.getServer().listen(Application.PORT, () => {

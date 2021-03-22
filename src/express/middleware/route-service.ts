@@ -4,7 +4,6 @@ import path from 'path';
 import { AuthHandler } from '../../application/interfaces/auth-handler';
 import { AuthService } from '../../application/services/auth-service';
 import { Factory, Inject } from '../../application/model-layer/core/modules/decorators';
-import { FidoProviderService } from './../../application/services/fido-provider-service';
 import { Logger } from '../../application/services/logger';
 import { RouteHandler } from '../interfaces/route-handler';
 import { Token } from '../../application/model-layer/core/models/ticket';
@@ -12,9 +11,6 @@ import { Token } from '../../application/model-layer/core/models/ticket';
 export class RouteService extends RouteHandler {
   @Factory(AuthService)
   private readonly authHandler: AuthHandler;
-
-  @Inject(FidoProviderService)
-  private readonly fidoService: FidoProviderService;
 
   public async confirmLogin(request: express.Request, response: express.Response): Promise<void> {
     const username = request.body.username;
