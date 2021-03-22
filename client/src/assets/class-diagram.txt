@@ -1,0 +1,438 @@
+@startuml
+interface FidoDialogData {
+    +title: string
+    +content: string
+}
+class FidoDialogComponent {
+    +data: FidoDialogData
+    +dialogRef: MatDialogRef<FidoDialogComponent, any>
+}
+class OfflineService {
+    +offlineStateAsObservable: Observable<boolean>
+    -isOffline: BehaviorSubject<boolean>
+    +nextOfflineState(isOffline: boolean): void
+}
+interface EventMessage {
+    +event: string
+    +data: any
+}
+class EventMap {
+    -map: Map<string, BehaviorSubject<any>>
+    +pushMessage(eventName: string, data: T): Observable<T>
+    +fromEvent(eventName: string): Observable<T>
+    +cleanEvent(eventName: string): void
+    -getSubject(eventName: string): BehaviorSubject<T>
+    -createObservable(observable: Observable<T>): Observable<T>
+}
+class Logger {
+    -{static} _logMessageSubject: BehaviorSubject<any[]>
+    +{static} next(messages: any[]): void
+    +{static} getLogMessagesObservable(): Observable<any[]>
+}
+interface IdentificationObject {
+    +id: string
+}
+class SocketService {
+    -websocketUri: string
+    -identification: string
+    -websocket: WebSocket
+    -mapEvents: EventMap
+    -reconnectTries: number
+    -reset: Subject<void>
+    -websocketConnectionSubject: Subject<boolean>
+    +id: string
+    +user: IdentificationObject
+    +isConnected: boolean
+    +onReset: Observable<void>
+    +onWebsocketConnection: Observable<boolean>
+    -zone: NgZone
+    -offlineService: OfflineService
+    +emit(eventName: string, data?: T | undefined, to?: string | undefined): Observable<R>
+    -send(type: string, message: any, to?: string): void
+    +fromEvent(eventName: string): Observable<T>
+    +cleanEvents(events: string[]): void
+    -parseMessage(event: any): void
+    -connectToWebsocket(wsUri: string): void
+    -onClose(): void
+}
+class User extends BaseModel {
+    +userId: string
+    +username: string
+    +password?: string | undefined
+    +totp?: any
+    +email?: any
+    +fido?: any
+    +authenticationTypes: string[]
+}
+namespace UserEvents {
+}
+class UsersService {
+    -userSubject: BehaviorSubject<User[]>
+    -authenticationTypeSubject: BehaviorSubject<string[]>
+    -currentUserToCreate: Partial<User>
+    -websocket: any
+    +getAllUsersInstantly(): User[]
+    +getAllUsersObservable(): Observable<User[]>
+    +getAuthenticationTypesInstantly(): string[]
+    +create(user: Partial<User>): Promise<void>
+    +update(userId: string, user: Partial<User>): Promise<void>
+    +delete(user: User): Promise<void>
+    +getUser(userId: string): Promise<User>
+    +resetDatabase(): Promise<void>
+    +updateCurrentUserToCreate(update: Partial<User>): Promise<void>
+    -initWebsocketEvents(): void
+}
+enum FidoAuthenticationStep {
+    REQUEST
+    CHALLENGE
+    CREDENTIAL
+}
+interface CredentialLike {
+    +id: string
+    +rawId: string
+    +response: { attestationObject: string; clientDataJSON: string; }
+    +type: string
+}
+interface FidoAuthentication {
+    +event: FidoAuthenticationStep
+    +content?: any
+}
+class FidoAuthenticatorService {
+    -socket: SocketService
+    -dialog: MatDialog
+    -snackbar: MatSnackBar
+    -userService: UsersService
+    +login(credentialOptions: any): Promise<any>
+    -onLogin(credentialOptions: any): Promise<any>
+    -onRegister(answer: any): Promise<void>
+    -challengeCredential(answer: any): Promise<void>
+    -onAnswerFromServer(answer: any): Promise<Credential>
+    -extractPublicKeyCredentialCreationOptions(answer: any): any
+    -toString(buffer: ArrayBuffer): string
+    -base64ToBuffer(base64: string): Uint8Array
+}
+class LoginSiteComponent extends BaseComponent implements OnInit {
+    +loginForm: FormGroup
+    +additionalForm: FormGroup
+    +errorMessage: string
+    +showSpinner: boolean
+    +authForm: FormGroup
+    +requiredAuthenticationFactors: string[]
+    +requiredAuthenticationData: { [key: string]: any; }
+    +isVisible: boolean
+    +username: string
+    +fidoCredentials: any
+    -fb: FormBuilder
+    -auth: any
+    -fido: FidoAuthenticatorService
+    -matSnackbar: MatSnackBar
+    +ngOnInit(): void
+    +login(): Promise<void>
+    +confirmLogin(): Promise<void>
+    +clear(): void
+    +cancel(): void
+    -prepareAuthForm(): void
+    -prepareFido(): Promise<void>
+    -getVerboseReasons(reasons: string[]): string
+}
+class ConsoleComponent extends BaseComponent implements OnInit, AfterViewInit {
+    +consoleWrapper: ElementRef<HTMLDivElement>
+    +virtualScrollViewport?: CdkVirtualScrollViewport | undefined
+    +isOpen: boolean
+    +isOpen: boolean
+    +messageObservable: Observable<string[]>
+    +messages: string[]
+    -_isOpen: boolean
+    -cd: ChangeDetectorRef
+    +ngOnInit(): void
+    +ngAfterViewInit(): void
+    +trackByIndex(index: number): number
+    -scrollToBottom(): void
+}
+class SiteComponentsModule
+interface AuthToken {
+    +expiresAt: Date
+    +userId: number
+    +sessionId: string
+    +iat: number
+    +exp: number
+}
+class AuthTokenService {
+    -_rawAccessToken: string | null
+    +rawAccessToken: string | null
+    -accessTokenSubject: BehaviorSubject<AuthToken | null>
+    +accessTokenObservable: Observable<AuthToken | null>
+    +accessToken: AuthToken | null
+    +setRawAccessToken(rawToken?: string | undefined): void
+    -parseToken(rawToken: string): AuthToken | null
+}
+interface Answer<T> {
+    +success: boolean
+    +message?: string | undefined
+    +data: T
+}
+enum HTTPMethod {
+    GET
+    POST
+    PUT
+    PATCH
+    DELETE
+}
+class HttpService {
+    -defaultHeaders: HttpHeaders
+    -serverURL: string
+    -http: HttpClient
+    -send(path: string, method: HTTPMethod, data?: any, customHeader?: HttpHeaders | undefined, responseType?: string | undefined, serverURL?: string): Promise<T>
+    +get(path: string, data?: any, header?: HttpHeaders | undefined, responseType?: string | undefined, serverURL?: string | undefined): Promise<T>
+    +post(path: string, data?: any, header?: HttpHeaders | undefined, serverURL?: string | undefined): Promise<T>
+    +patch(path: string, data?: any, header?: HttpHeaders | undefined, serverURL?: string | undefined): Promise<T>
+    +put(path: string, data?: any, header?: HttpHeaders | undefined, serverURL?: string | undefined): Promise<T>
+    +delete(path: string, data?: any, header?: HttpHeaders | undefined, serverURL?: string | undefined): Promise<T>
+    -getServerURL(): string
+}
+interface LoginAnswer extends Answer {
+    +token: string
+}
+namespace Authentication {
+    interface OtpValues {
+        +type: "hotp" | "totp"
+        +secret: string
+        +digits?: Digits | undefined
+        +issuer: string
+        +to: string
+        +period?: number | undefined
+        +initialCounter?: number | undefined
+    }
+}
+class AuthService {
+    +InitiateObservable: Observable<boolean>
+    -initiateSubject: BehaviorSubject<boolean>
+    -http: HttpService
+    -authTokenService: AuthTokenService
+    -router: Router
+    +sayHello(): Promise<void>
+    +login(credentials: { username: string; }): Promise<any>
+    +confirmAuthentication(username: string, additional: { password?: string | undefined; totp?: string | undefined; email?: string | undefined; }): Promise<any>
+    +interceptInitiating(): Promise<boolean>
+    +whoAmI(callback?: (() => void) | undefined): Promise<void>
+    +logout(): Promise<void>
+    +isAuthenticated(): boolean
+}
+class AuthGuard implements CanActivate {
+    +auth: AuthService
+    +router: Router
+    +canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree>
+}
+class HeadbarService {
+    +isServerConsoleOpen: boolean
+    +isClientConsoleOpen: boolean
+    -_serverConsoleStateSubject: BehaviorSubject<boolean>
+    -_clientConsoleStateSubject: BehaviorSubject<boolean>
+    +nextServerConsoleSate(isOpen: boolean): void
+    +nextClientConsoleState(isOpen: boolean): void
+}
+class ConsoleService {
+    -_logServerMessagesSubject: BehaviorSubject<any[]>
+    -socket: any
+    +getLogServerMessagesObservable(): Observable<any[]>
+}
+class SiteComponent implements AfterViewInit {
+    +title: string
+    +wrapper: ElementRef<HTMLElement>
+    +clientConsole: Observable<any[]>
+    +serverConsole: Observable<any[]>
+    +headbar: HeadbarService
+    -serverConsoleService: ConsoleService
+    +ngAfterViewInit(): void
+    +changeWidth(width: number): void
+}
+interface DashboardItem {
+    +title: string
+    +onClick?: (() => void) | undefined
+    +routerLinkSegments?: string[] | undefined
+}
+class DashboardService {
+    -dashboardItemSubject: BehaviorSubject<DashboardItem[]>
+    +registerDashboardItem(item: DashboardItem): void
+    +getDashboardItemObservable(): Observable<DashboardItem[]>
+}
+class DashboardCardComponent implements OnInit {
+    +dashboardItem: DashboardItem
+    +title: string
+    -router: Router
+    +ngOnInit(): void
+    +onClick(): void
+}
+class DashboardComponent extends BaseComponent implements OnInit, OnDestroy {
+    -DASHBOARD_ITEMS: DashboardItem[]
+    +color: any
+    +dashboardItems: DashboardItem[]
+    +isOAuthActivated: boolean
+    -_oauthActivated: boolean
+    -auth: any
+    -authTokenService: any
+    +ngOnInit(): Promise<void>
+    +ngOnDestroy(): void
+    +sayHello(): void
+    +whoAmI(): void
+    +logout(): void
+    +isAuthenticated(): boolean
+}
+class DashboardRoutingModule
+class DashboardModule
+class SiteRoutingModule
+class HeadbarComponent implements OnInit {
+    +hasLeftIcon: boolean
+    +leftIcon: string
+    +clickLeftIcon: EventEmitter<void>
+    +add: EventEmitter<void>
+    +isServerConsoleOpen: boolean
+    +isClientConsoleOpen: boolean
+    -headbarService: HeadbarService
+    +ngOnInit(): void
+    +onLeftIconClicked(): void
+    +toggleClientConsole(): void
+    +toggleServerConsole(): void
+}
+class IndicatorComponent implements OnInit {
+    +color: IndicatorColor
+    +ngOnInit(): void
+}
+class LoadingSpinnerComponent implements OnInit {
+    +ngOnInit(): void
+}
+class MaterialModule
+class GridComponent implements OnInit {
+    +fullHeight: boolean
+    +centering: boolean
+    +orientation: Orientation
+    +ngOnInit(): void
+}
+class CellComponent implements OnInit {
+    +ngOnInit(): void
+}
+class QrCodeComponent implements OnInit {
+    +canvasWrapper: ElementRef<HTMLElement>
+    +value: string
+    +value: string
+    -_value: string
+    -_changed: boolean
+    +ngOnInit(): void
+    -prepareQrCode(): void
+}
+interface PromptDialogData {
+    +title: string
+    +text?: string | undefined
+}
+class PromptDialogComponent implements OnInit {
+    +dialogRef: MatDialogRef<PromptDialogComponent, any>
+    +data: PromptDialogData
+    +ngOnInit(): void
+}
+class ConfirmOnEnterDirective implements AfterViewInit {
+    +appConfirmOnEnter: EventEmitter<void>
+    -element: ElementRef<HTMLElement>
+    +ngAfterViewInit(): void
+}
+class AutofocusDirective implements AfterViewInit {
+    +appAutofocus: boolean
+    -element: ElementRef<HTMLElement>
+    +ngAfterViewInit(): void
+}
+class UIModule
+class BaseComponent implements OnDestroy {
+    #subscriptions: Subscription[]
+    +ngOnDestroy(): void
+}
+class CryptoService {
+    +generateRandomString(length?: number): string
+    +sha(plain: string): string
+}
+interface AuthTypeValue {
+    +email?: string | undefined
+    +totp?: string | undefined
+    +password?: string | undefined
+}
+class UserAuthenticationTypeChooserComponent extends BaseComponent implements OnInit {
+    +authenticationModel: { 'cross-platform': string; }
+    +selectedAuthenticationTypes: string[]
+    +selectedAuthenticationTypes: string[]
+    +username: string
+    +username: string
+    +user: User
+    +formChange: EventEmitter<AuthTypeValue>
+    +authTypeForm: FormGroup
+    +totpUri: string
+    +isVisible: boolean
+    -selectedTypes: string[]
+    -_username: string
+    -fb: FormBuilder
+    -crypto: CryptoService
+    +ngOnInit(): void
+    +getValue(): AuthTypeValue
+    -prepareTotp(): void
+}
+interface UserDetailDialogData {
+    +user?: User | undefined
+    +authenticationTypes: string[]
+}
+class UserDetailDialogComponent extends BaseComponent implements OnInit {
+    +userForm: FormGroup
+    +user: User | undefined
+    +username: string
+    +authenticationTypes: string[]
+    +selectedAuthenticationTypes: string[]
+    +authTypeForm: { [key: string]: string; }
+    -_selectedTypes: string[]
+    -_username: string
+    +dialogRef: MatDialogRef<UserDetailDialogComponent, any>
+    -data: UserDetailDialogData
+    -fb: FormBuilder
+    +ngOnInit(): void
+    +onSubmit(): void
+    +isValid(): boolean
+    +getVerboseAuthenticationType(type: string): string
+}
+class UserListComponent implements OnInit {
+    +users: User[]
+    +editUser: EventEmitter<User>
+    +deleteUser: EventEmitter<User>
+    +ngOnInit(): void
+    +getAuthenticationTypeVerboseName(type: string): string
+}
+class PromptDialogService {
+    -dialog: MatDialog
+    +open(title: string, text?: string | undefined): Promise<boolean>
+}
+class UserManagementComponent extends BaseComponent implements OnInit, OnDestroy {
+    +users: User[]
+    -_users: User[]
+    -userService: UsersService
+    -fidoService: FidoAuthenticatorService
+    -dialog: MatDialog
+    -promptService: PromptDialogService
+    +ngOnInit(): void
+    +ngOnDestroy(): void
+    +createUser(): Promise<void>
+    +editUser(user: User): Promise<void>
+    +deleteUser(user: User): Promise<void>
+    +resetDatabase(): Promise<void>
+    -showUserDetailDialog(user?: User | undefined): Promise<Partial<User>>
+}
+class UsersRoutingModule
+class UsersModule
+class SiteModule
+class AppRoutingModule
+class AppComponent {
+    +title: string
+}
+class AuthInterceptorService implements HttpInterceptor {
+    -authTokenService: AuthTokenService
+    +intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>
+    -handleHttpResponse(httpEvent: HttpEvent<any>): void
+    -handleHttpError(error: any): void
+    -logHttpEvent(httpEvent: HttpResponse<any> | HttpRequest<any>): void
+    -convertHeadersToString(headersToConvert: HttpHeaders): string
+}
+class AppModule
+@enduml
