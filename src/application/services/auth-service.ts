@@ -1,7 +1,8 @@
 import { AuthGuard } from 'auth-guard';
+import { Factory, Inject } from 'final-di';
 
 import { AuthHandler } from '../interfaces/auth-handler';
-import { Factory, Inject } from '../model-layer/core/modules/decorators';
+// import { Factory, Inject } from '../model-layer/core/modules/decorators';
 import { Logger } from './logger';
 import { SessionService } from './session-service';
 import { Ticket, Token } from '../model-layer/core/models/ticket';

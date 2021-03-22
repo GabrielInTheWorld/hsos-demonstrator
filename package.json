@@ -30,6 +30,7 @@
     "crypto-random-string": "^3.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "express": "^4.17.1",
+    "final-di": "^1.0.2",
     "final-otp": "^1.0.3",
     "jsonwebtoken": "^8.5.1",
     "jwk-to-pem": "^2.0.4",

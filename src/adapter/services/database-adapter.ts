@@ -1,8 +1,8 @@
+import { Injectable } from 'final-di';
 import PouchDB from 'pouchdb';
 import * as PouchDBFind from 'pouchdb-find';
 
 import { Constructor, DatabasePort, ReplicaObject } from '../interfaces/database-port';
-import { Constructable } from '../../application/model-layer/core/modules/decorators';
 import { Logger } from '../../application/services/logger';
 
 type DTO<T> = T & DatabaseObject;
@@ -13,7 +13,7 @@ interface DatabaseObject {
   key: string;
 }
 
-@Constructable(DatabasePort)
+@Injectable(DatabasePort)
 export class DatabaseAdapter extends DatabasePort {
   public name = 'DatabaseAdapter';
 

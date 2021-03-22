@@ -1,6 +1,8 @@
+import { Inject } from 'final-di';
 import { WebsocketHandler } from 'reactive-websocket';
+
 import { MessageHandler } from '../interfaces/message-handler';
-import { Inject } from '../model-layer/core/modules/decorators';
+// import { Inject } from '../model-layer/core/modules/decorators';
 import { Logger } from './logger';
 
 export class MessageService implements MessageHandler {

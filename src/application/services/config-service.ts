@@ -1,8 +1,8 @@
 import { AuthGuard } from 'auth-guard';
+import { Inject } from 'final-di';
 import { WebsocketHandler } from 'reactive-websocket';
 
 import { AuthenticationType } from '../model-layer/core/models/authentication/authentication-types';
-import { Inject } from '../model-layer/core/modules/decorators';
 import { Config } from '../util/config';
 
 export class ConfigService {

@@ -1,6 +1,7 @@
+import { Inject, Injectable } from 'final-di';
 import { WebsocketHandler } from 'reactive-websocket';
 
-import { Constructable, Inject } from '../application/model-layer/core/modules/decorators';
+// import { Constructable, Inject } from '../application/model-layer/core/modules/decorators';
 import { Logger } from '../application/services/logger';
 import { UserService } from '../application/model-layer/user/user-service';
 
@@ -9,7 +10,7 @@ interface SocketData {
   data: any;
 }
 
-@Constructable(WebsocketUserService)
+@Injectable(WebsocketUserService)
 export class WebsocketUserService {
   @Inject(WebsocketHandler)
   private readonly websocket: WebsocketHandler;

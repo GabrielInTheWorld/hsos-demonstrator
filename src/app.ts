@@ -1,10 +1,11 @@
+import { Factory, Inject } from 'final-di';
 import { Server } from 'http';
 import { WebsocketHandler } from 'reactive-websocket';
 import 'reflect-metadata';
 
 import AuthenticationServer from './express/server/authentication-server';
 import { BaseServer } from './express/interfaces/base-server';
-import { Factory, Inject } from './application/model-layer/core/modules/decorators';
+// import { Factory, Inject } from './application/model-layer/core/modules/decorators';
 import { Logger } from './application/services/logger';
 import { MessageHandler } from './application/interfaces/message-handler';
 import { MessageService } from './application/services/message-service';

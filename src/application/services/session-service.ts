@@ -1,12 +1,13 @@
+import { Inject, Injectable } from 'final-di';
+
 import { DatabaseAdapter } from '../../adapter/services/database-adapter';
 import { DatabasePort, ReplicaObject } from '../../adapter/interfaces/database-port';
-import { Constructable, Inject } from '../model-layer/core/modules/decorators';
 import { Random } from '../util/helper';
 import { Logger } from './logger';
 import { SessionHandler } from '../interfaces/session-handler';
 import { User } from '../model-layer/core/models/user';
 
-@Constructable(SessionHandler)
+@Injectable(SessionHandler)
 export class SessionService extends SessionHandler {
   @Inject(DatabaseAdapter)
   private readonly database: DatabasePort;

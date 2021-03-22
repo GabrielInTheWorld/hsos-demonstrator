@@ -1,6 +1,6 @@
 import * as express from 'express';
+import { Factory } from 'final-di';
 
-import { Factory } from '../../application/model-layer/core/modules/decorators';
 import { Logger } from '../../application/services/logger';
 import { RouteHandler } from '../interfaces/route-handler';
 import { RouteService } from '../middleware/route-service';

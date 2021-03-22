@@ -1,7 +1,8 @@
+import { Factory, Inject } from 'final-di';
 import jwt, { TokenExpiredError } from 'jsonwebtoken';
 
 import { BaseException } from '../model-layer/core/exceptions/base-exception';
-import { Factory, Inject } from '../model-layer/core/modules/decorators';
+// import { Factory, Inject } from '../model-layer/core/modules/decorators';
 import { KeyHandler } from '../../express/interfaces/key-handler';
 import { KeyService } from '../../express/services/key-service';
 import { Logger } from './logger';

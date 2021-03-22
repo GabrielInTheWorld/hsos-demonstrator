@@ -1,9 +1,10 @@
 import { AuthGuard } from 'auth-guard';
+import { Inject, Injectable } from 'final-di';
 
 import { AuthenticationType } from '../core/models/authentication/authentication-types';
 import { DatabaseAdapter } from '../../../adapter/services/database-adapter';
 import { DatabasePort, ReplicaObject } from '../../../adapter/interfaces/database-port';
-import { Constructable, Inject } from '../core/modules/decorators';
+// import { Constructable, Inject } from '../core/modules/decorators';
 import { Logger } from '../../../application/services/logger';
 import { User } from '../core/models/user';
 import { UserHandler } from './user-handler';
@@ -22,7 +23,7 @@ interface UserDto {
   authenticationTypes: AuthenticationType[];
 }
 
-@Constructable(UserHandler)
+@Injectable(UserHandler)
 export class UserService extends UserHandler {
   @Inject(DatabaseAdapter)
   private readonly database: DatabasePort;

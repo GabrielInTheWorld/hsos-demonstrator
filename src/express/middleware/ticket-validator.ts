@@ -1,7 +1,8 @@
 import express from 'express';
+import { Factory } from 'final-di';
 
 import { AuthHandler } from '../../application/interfaces/auth-handler';
-import { Factory } from '../../application/model-layer/core/modules/decorators';
+// import { Factory } from '../../application/model-layer/core/modules/decorators';
 import { TicketHandler } from '../../application/interfaces/ticket-handler';
 import { TicketService } from '../../application/services/ticket-service';
 import { Validator } from '../interfaces/validator';

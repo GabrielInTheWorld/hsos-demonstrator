@@ -1,5 +1,3 @@
-import { InjectableClass } from '../../application/model-layer/core/modules/decorators';
-
 export type Constructor<T = {}> = new (...args: any) => T;
 
 export interface ReplicaObject {
@@ -12,7 +10,7 @@ export interface ReplicaObject {
   clear: () => Promise<void>;
 }
 
-export abstract class DatabasePort extends InjectableClass {
+export abstract class DatabasePort {
   public static readonly PREFIX = 'auth';
 
   public abstract keys(prefix: string): Promise<string[]>;

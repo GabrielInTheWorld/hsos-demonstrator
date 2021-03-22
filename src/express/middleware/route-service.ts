@@ -1,9 +1,10 @@
 import express, { Request, Response } from 'express';
+import { Factory } from 'final-di';
 import path from 'path';
 
 import { AuthHandler } from '../../application/interfaces/auth-handler';
 import { AuthService } from '../../application/services/auth-service';
-import { Factory, Inject } from '../../application/model-layer/core/modules/decorators';
+// import { Factory, Inject } from '../../application/model-layer/core/modules/decorators';
 import { Logger } from '../../application/services/logger';
 import { RouteHandler } from '../interfaces/route-handler';
 import { Token } from '../../application/model-layer/core/models/ticket';
