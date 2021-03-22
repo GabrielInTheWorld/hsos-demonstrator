@@ -17,6 +17,6 @@
     "types": ["node", "reflect-metadata"],
     "typeRoots": ["node_modules/@types"]
   },
-  "include": ["src/**/*.ts", "src/assets/test.txt"],
+  "include": ["src/app/**/*.ts", "src/assets/**/*"],
   "exclude": ["node_modules"]
 }

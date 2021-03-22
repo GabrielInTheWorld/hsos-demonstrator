@@ -12,7 +12,7 @@ function createMenu() {
 function startServer() {
   return new Promise((resolve, reject) => {
     // Instantiate express server
-    childProcess = spawn('node', ['build/index.js'], { shell: true });
+    childProcess = spawn('node', ['build/app/index.js'], { shell: true });
     childProcess.stdout.on('data', message => {
       message = message.toString();
       console.log(message);
@@ -75,7 +75,9 @@ app.whenReady().then(() => {
 app.on('window-all-closed', function() {
   console.log('app closing...');
   if (childProcess) childProcess.kill('SIGINT');
-  if (process.platform !== 'darwin') app.quit();
+  setTimeout(() => {
+    if (process.platform !== 'darwin') app.quit();
+  }, 10);
 });
 
 // In this file you can include the rest of your app's specific main process
