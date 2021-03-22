@@ -7,12 +7,11 @@
   "scripts": {
     "dev": "nodemon src/index.ts",
     "electron": "electron .",
-    "postinstall": "cd client && ngcc && cd .. && electron-builder install-app-deps",
     "build": "npm run build-ts && npm run build-client",
     "build-ts": "tsc",
     "build-client": "cd client && npm run build:electron && cd ..",
     "make": "npm run build && npm run make:builder",
-    "make:builder": "electron-builder",
+    "make:builder": "electron-builder build -lw",
     "lint": "echo \"No linting configured\""
   },
   "keywords": [],
@@ -22,13 +21,13 @@
   },
   "license": "MIT",
   "dependencies": {
+    "auth-guard": "^1.0.4",
     "base-coding": "^1.0.3",
     "bignumber.js": "^9.0.1",
     "body-parser": "^1.19.0",
     "cbor": "^7.0.2",
     "cookie-parser": "^1.4.5",
     "crypto-random-string": "^3.2.0",
-    "custom-fido-library": "^1.0.2",
     "electron-squirrel-startup": "^1.0.0",
     "express": "^4.17.1",
     "final-otp": "^1.0.3",

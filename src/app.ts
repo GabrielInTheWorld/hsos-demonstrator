@@ -9,6 +9,7 @@ import { FidoProviderService } from './application/services/fido-provider-servic
 import { Logger } from './application/services/logger';
 import { MessageHandler } from './application/interfaces/message-handler';
 import { MessageService } from './application/services/message-service';
+import { WebsocketUserService } from './api/websocket-user.service';
 
 export class Application {
   public static readonly PORT: number = parseInt(process.env.PORT || '', 10) || 8000;
@@ -26,6 +27,9 @@ export class Application {
   @Inject(WebsocketHandler)
   private readonly websocket: WebsocketHandler;
 
+  @Inject(WebsocketUserService)
+  private readonly websocketUserService: WebsocketUserService;
+
   @Inject(FidoProviderService)
   private readonly fidoService: FidoProviderService;
 
@@ -39,6 +43,7 @@ export class Application {
       onClientConnect: socket => Logger.log(`Client ${socket.id} verbindet sich...`),
       logger: (...messages: any[]) => Logger.debug('Websocket:', ...messages)
     });
+    this.websocketUserService.init();
     return server;
   }
 }

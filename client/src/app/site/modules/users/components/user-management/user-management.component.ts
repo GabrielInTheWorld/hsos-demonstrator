@@ -7,6 +7,7 @@ import { User } from './../../models/user';
 import { UserDetailDialogComponent } from '../user-detail-dialog/user-detail-dialog.component';
 import { UsersService } from '../../services/users.service';
 import { Logger } from 'src/app/core/utils/logger';
+import { FidoAuthenticatorService } from '../../services/fido-authenticator.service';
 
 @Component({
     selector: 'app-user-management',
@@ -22,6 +23,7 @@ export class UserManagementComponent extends BaseComponent implements OnInit, On
 
     public constructor(
         private readonly userService: UsersService,
+        private readonly fidoService: FidoAuthenticatorService,
         private readonly dialog: MatDialog,
         private readonly promptService: PromptDialogService
     ) {

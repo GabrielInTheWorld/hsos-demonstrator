@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { FidoDialogComponent } from '../components/fido-dialog/fido-dialog.component';
 import { SocketService } from './../../../../core/services/socket.service';
+import { UsersService } from './users.service';
 
 enum FidoAuthenticationStep {
     /**
@@ -42,9 +43,11 @@ export class FidoAuthenticatorService {
     public constructor(
         private readonly socket: SocketService,
         private readonly dialog: MatDialog,
-        private readonly snackbar: MatSnackBar
+        private readonly snackbar: MatSnackBar,
+        private readonly userService: UsersService
     ) {
-        this.socket.fromEvent('fido-register').subscribe((answer: any) => {
+        this.socket.fromEvent('create-user').subscribe((answer: any) => {
+            console.log('create-user event:', answer);
             this.onRegister(answer);
         });
     }
@@ -84,29 +87,25 @@ export class FidoAuthenticatorService {
         };
     }
 
-    private async onRegister(answer: FidoAuthentication): Promise<void> {
-        switch (answer.event) {
-            case FidoAuthenticationStep.CHALLENGE:
-                await this.challengeCredential(answer);
-                break;
+    private async onRegister(answer: any): Promise<void> {
+        if (answer.fido) {
+            await this.challengeCredential(answer.fido);
         }
     }
 
-    private async challengeCredential(answer: FidoAuthentication): Promise<void> {
+    private async challengeCredential(answer: any): Promise<void> {
+        console.log('challengeCredential', answer);
         let content: any = null;
         try {
-            const credential = await this.onAnswerFromServer(answer.content.publicKeyCredentialCreationOptions);
-            content = { credential, userId: answer.content.userId };
+            const credential = await this.onAnswerFromServer(answer);
+            content = { credential, userId: answer.userId };
         } catch (e) {
             console.log('Something went wrong:', e);
             this.snackbar.open('Ihr Gerät ist dafür nicht ausgelegt.', 'Okay', { duration: 2000 });
             content = 'cancel';
         }
         this.dialog.closeAll();
-        this.socket.emit('fido-register', {
-            event: FidoAuthenticationStep.CREDENTIAL,
-            content
-        });
+        await this.userService.updateCurrentUserToCreate({ fido: content.credential, userId: answer.user.id });
     }
 
     private async onAnswerFromServer(answer: any): Promise<Credential> {

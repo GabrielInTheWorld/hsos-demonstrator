@@ -1,11 +1,8 @@
-import { MatDialog } from '@angular/material/dialog';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import { HttpService } from 'src/app/core/services/http.service';
 import { SocketService } from 'src/app/core/services/socket.service';
 import { User } from './../models/user';
-import { FidoAuthenticatorService } from './fido-authenticator.service';
 import { Logger } from 'src/app/core/utils/logger';
 
 // tslint:disable-next-line: variable-name
@@ -28,7 +25,9 @@ export class UsersService {
     private readonly userSubject = new BehaviorSubject<User[]>([]);
     private readonly authenticationTypeSubject = new BehaviorSubject<string[]>([]);
 
-    public constructor(private readonly websocket: SocketService, private readonly fido: FidoAuthenticatorService) {
+    private currentUserToCreate: Partial<User>;
+
+    public constructor(private readonly websocket: SocketService) {
         this.initWebsocketEvents();
     }
 
@@ -49,6 +48,7 @@ export class UsersService {
             return;
         }
         Logger.next('Erstelle Benutzer: ', user);
+        this.currentUserToCreate = user;
         this.websocket.emit('create-user', user);
     }
 
@@ -81,6 +81,11 @@ export class UsersService {
         return new Promise(resolve => {
             this.websocket.emit('reset-database').subscribe(() => resolve());
         });
+    }
+
+    public async updateCurrentUserToCreate(update: Partial<User>): Promise<void> {
+        this.currentUserToCreate = { ...this.currentUserToCreate, ...update };
+        await this.create(this.currentUserToCreate);
     }
 
     private initWebsocketEvents(): void {

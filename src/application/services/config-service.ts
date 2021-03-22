@@ -1,13 +1,16 @@
+import { AuthGuard } from 'auth-guard';
 import { WebsocketHandler } from 'reactive-websocket';
 
 import { AuthenticationType } from '../model-layer/core/models/authentication/authentication-types';
-import { AuthenticatorProvider } from '../interfaces/authenticator-provider';
-import { AuthenticatorProviderService } from './authenticator-provider-service';
 import { Inject } from '../model-layer/core/modules/decorators';
+import { Config } from '../util/config';
 
 export class ConfigService {
-  @Inject(AuthenticatorProviderService)
-  private readonly provider: AuthenticatorProvider;
+  @Inject(AuthGuard, {
+    expectedOrigins: [Config.localClientUrl, Config.localServerUrl],
+    domain: 'no-reply@demonstrator.com'
+  })
+  private readonly authGuard: AuthGuard;
 
   @Inject(WebsocketHandler)
   private readonly websocket: WebsocketHandler;
@@ -22,6 +25,6 @@ export class ConfigService {
   }
 
   public getAvailableAuthenticationMethods(): AuthenticationType[] {
-    return this.provider.getAvailableAuthenticationTypes();
+    return this.authGuard.getAvailableAuthenticators();
   }
 }

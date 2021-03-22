@@ -1,9 +1,8 @@
+import { AuthGuard } from 'auth-guard';
+
 import { AuthHandler } from '../interfaces/auth-handler';
-import { AuthenticatorProvider } from '../interfaces/authenticator-provider';
-import { AuthenticatorProviderService } from './authenticator-provider-service';
 import { Factory, Inject } from '../model-layer/core/modules/decorators';
 import { Logger } from './logger';
-import { MissingAuthenticationException } from './../model-layer/core/exceptions/missing-authentication-exception';
 import { SessionService } from './session-service';
 import { Ticket, Token } from '../model-layer/core/models/ticket';
 import { TicketHandler } from '../interfaces/ticket-handler';
@@ -22,8 +21,8 @@ export class AuthService extends AuthHandler {
   @Inject(SessionService)
   private readonly sessionHandler: SessionService;
 
-  @Inject(AuthenticatorProviderService)
-  private readonly provider: AuthenticatorProvider;
+  @Inject(AuthGuard)
+  private readonly provider: AuthGuard;
 
   public async confirmAdditionalCredentials(
     username: string,
@@ -31,12 +30,12 @@ export class AuthService extends AuthHandler {
   ): Promise<Validation<Ticket>> {
     try {
       const user = await this.userHandler.getUserByUsername(username);
-      await this.provider.readAuthenticationValues(user, additional);
+      this.provider.login(user, additional);
       return await this.ticketHandler.create(user);
     } catch (e) {
       Logger.error(e);
-      if (e instanceof MissingAuthenticationException) {
-        return { isValid: false, message: e.message, reason: e.getMissingTypes(), data: e.getData() };
+      if (e.missingTypes) {
+        return { isValid: false, message: e.message, reason: e.missingTypes, data: e.data };
       }
       return { isValid: false, message: e.message };
     }

@@ -1,14 +1,13 @@
-import { WebsocketHandler } from 'reactive-websocket';
+import { AuthGuard } from 'auth-guard';
 
 import { AuthenticationType } from '../core/models/authentication/authentication-types';
-import { AuthenticatorProvider } from '../../interfaces/authenticator-provider';
-import { AuthenticatorProviderService } from './../../services/authenticator-provider-service';
 import { DatabaseAdapter } from '../../../adapter/services/database-adapter';
 import { DatabasePort, ReplicaObject } from '../../../adapter/interfaces/database-port';
 import { Constructable, Inject } from '../core/modules/decorators';
 import { Logger } from '../../../application/services/logger';
 import { User } from '../core/models/user';
 import { UserHandler } from './user-handler';
+import { Config } from '../../util/config';
 
 interface UserDto {
   readonly username: string;
@@ -28,11 +27,12 @@ export class UserService extends UserHandler {
   @Inject(DatabaseAdapter)
   private readonly database: DatabasePort;
 
-  @Inject(WebsocketHandler)
-  private readonly websocket: WebsocketHandler;
-
-  @Inject(AuthenticatorProviderService)
-  private readonly authenticator: AuthenticatorProvider;
+  @Inject(AuthGuard, {
+    logger: Logger,
+    expectedOrigins: [Config.localClientUrl, Config.localServerUrl],
+    domain: 'no-reply@demonstrator.com'
+  })
+  private readonly authenticator: AuthGuard;
 
   private userDatabase: ReplicaObject;
 
@@ -49,7 +49,6 @@ export class UserService extends UserHandler {
       'userId'
     ]);
     this.userCounter = await this.getFirstIdCounter();
-    this.initWebsocketEvents();
   }
 
   public async create(partialUser: Partial<User>): Promise<User> {
@@ -119,22 +118,13 @@ export class UserService extends UserHandler {
     return user;
   }
 
-  private async getAllUsersForClient(): Promise<UserDto[]> {
+  public async getAllUsersForClient(): Promise<UserDto[]> {
     const users = await this.getAllUsers();
     return users.map(user => ({
       authenticationTypes: user.authenticationTypes,
       username: user.username,
       userId: user.userId
     }));
-  }
-
-  private async sendAllUsers(toSocket?: string): Promise<void> {
-    const users = await this.getAllUsersForClient();
-    if (toSocket) {
-      this.websocket.emit(toSocket, { event: 'all-users', data: [...users] });
-    } else {
-      this.websocket.broadcastAll({ event: 'all-users', data: [...users] });
-    }
   }
 
   public async hasUser(username: string): Promise<boolean> {
@@ -158,58 +148,24 @@ export class UserService extends UserHandler {
     await this.mockUserData();
   }
 
-  private initWebsocketEvents(): void {
-    this.websocket.fromEvent<any>('all-users').subscribe(message => {
-      this.sendAllUsers(message.socketId);
-    });
-    this.websocket
-      .fromEvent<any>('create-user')
-      .subscribe(async message => await this.onCreateEvent(message.data, message.socketId));
-    this.websocket
-      .fromEvent<any>('get-user')
-      .subscribe(async message => await this.onGetEvent(message.data, message.socketId));
-    this.websocket
-      .fromEvent<any>('update-user')
-      .subscribe(async message => await this.onUpdateEvent(message.data, message.socketId));
-    this.websocket
-      .fromEvent<any>('delete-user')
-      .subscribe(async message => await this.onDeleteEvent(message.data, message.socketId));
-    this.websocket
-      .fromEvent<any>('reset-database')
-      .subscribe(async message => await this.onResetEvent(message.socketId));
+  public async onCreateEvent(partialUser: User, values: any): Promise<void> {
+    await this.create(this.authenticator.register(partialUser, values));
   }
 
-  private async onCreateEvent(partialUser: User, socketId: string): Promise<void> {
-    try {
-      await this.create(await this.authenticator.writeAuthenticationValues(partialUser));
-    } catch (e) {
-      Logger.debug('An error occurred:', e);
-    }
-    this.sendAllUsers(socketId);
+  public async onGetEvent(userId: string): Promise<User> {
+    return await this.getUserByUserId(userId);
   }
 
-  private async onGetEvent(userId: string, socketId: string): Promise<void> {
-    const user = await this.getUserByUserId(userId);
-    this.websocket.emit(socketId, { event: 'get-user', data: user });
+  public async onUpdateEvent(update: User, values: any): Promise<void> {
+    await this.update(update.userId, this.authenticator.register(update, values));
   }
 
-  private async onUpdateEvent(update: User, socketId: string): Promise<void> {
-    try {
-      await this.update(update.userId, await this.authenticator.writeAuthenticationValues(update));
-    } catch (e) {
-      Logger.debug('An error occurred:', e);
-    }
-    this.sendAllUsers(socketId);
-  }
-
-  private async onDeleteEvent(userId: string, socketId: string): Promise<void> {
+  public async onDeleteEvent(userId: string): Promise<void> {
     await this.delete(userId);
-    this.sendAllUsers(socketId);
   }
 
-  private async onResetEvent(socketId: string): Promise<void> {
+  public async onResetEvent(): Promise<void> {
     await this.resetDatabase();
-    this.sendAllUsers(socketId);
   }
 
   private async mockUserData(): Promise<void> {
