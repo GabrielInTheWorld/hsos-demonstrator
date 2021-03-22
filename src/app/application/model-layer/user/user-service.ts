@@ -1,30 +1,18 @@
 import { AuthGuard } from 'auth-guard';
-import { Inject, Injectable } from 'final-di';
+import { IUser } from 'auth-guard/dist/lib/core/models/user';
+import { Inject } from 'final-di';
 
 import { AuthenticationType } from '../core/models/authentication/authentication-types';
 import { DatabaseAdapter } from '../../../adapter/services/database-adapter';
 import { DatabasePort, ReplicaObject } from '../../../adapter/interfaces/database-port';
-// import { Constructable, Inject } from '../core/modules/decorators';
 import { Logger } from '../../../application/services/logger';
 import { User } from '../core/models/user';
 import { UserHandler } from './user-handler';
 import { Config } from '../../util/config';
 
-interface UserDto {
-  readonly username: string;
-  readonly userId: string;
-  /**
-   * An email-address of a user.
-   */
-  readonly email?: string;
-  /**
-   * Property to determine, with which types a user wants to authenticate.
-   */
-  authenticationTypes: AuthenticationType[];
-}
+interface UserDto extends IUser {}
 
-@Injectable(UserHandler)
-export class UserService extends UserHandler {
+export class UserService implements UserHandler {
   @Inject(DatabaseAdapter)
   private readonly database: DatabasePort;
 
@@ -40,7 +28,6 @@ export class UserService extends UserHandler {
   private userCounter: number;
 
   public constructor() {
-    super();
     this.init();
   }
 

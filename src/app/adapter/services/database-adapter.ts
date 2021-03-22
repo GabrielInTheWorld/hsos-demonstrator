@@ -1,4 +1,3 @@
-import { Injectable } from 'final-di';
 import PouchDB from 'pouchdb';
 import * as PouchDBFind from 'pouchdb-find';
 
@@ -13,9 +12,8 @@ interface DatabaseObject {
   key: string;
 }
 
-@Injectable(DatabasePort)
-export class DatabaseAdapter extends DatabasePort {
-  public name = 'DatabaseAdapter';
+export class DatabaseAdapter implements DatabasePort {
+  public static readonly PREFIX = 'auth';
 
   private readonly database: PouchDB.Database;
 
@@ -25,7 +23,6 @@ export class DatabaseAdapter extends DatabasePort {
    * Initialize the database and redis commands declared above, if the database is not already initialized.
    */
   public constructor() {
-    super();
     if (!this.database) {
       PouchDB.plugin(PouchDBFind);
       this.database = new PouchDB('db', { auto_compaction: true });
@@ -166,7 +163,7 @@ export class DatabaseAdapter extends DatabasePort {
   }
 
   private getPrefix(prefix: string): string {
-    return `${DatabasePort.PREFIX}:${prefix}`;
+    return `${DatabaseAdapter.PREFIX}:${prefix}`;
   }
 
   private getPrefixedKey(prefix: string, key: string): string {

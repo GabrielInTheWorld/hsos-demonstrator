@@ -1,0 +1,150 @@
+@startuml
+enum LogColor {
+    Reset
+    Bright
+    Dim
+    Underscore
+    Blink
+    Reverse
+    Hidden
+    FgBlack
+    FgRed
+    FgGreen
+    FgYellow
+    FgBlue
+    FgMagenta
+    FgCyan
+    FgGray
+    FgWhite
+    BgBlack
+    BgRed
+    BgGreen
+    BgYellow
+    BgBlue
+    BgMagenta
+    BgCyan
+    BgWhite
+}
+class Logger {
+    -{static} _logMessageSubject: BehaviorSubject<any[]>
+    -{static} getTimeString(): string
+    -{static} formatDateTimeString(toFormat: string | number): string
+    -{static} info(color: string, message: any[]): void
+    +{static} log(message: any): void
+    +{static} warn(message: any): void
+    +{static} debug(message: any): void
+    +{static} error(message: any): void
+    +{static} getLogMessagesObservable(): Observable<any[]>
+}
+enum AuthenticationType {
+    PASSWORD
+    TOTP
+    EMAIL
+    FIDO
+}
+interface ReplicaObject {
+    +keys: () => Promise<string[]>
+    +set: <T>(key: string, obj: T) => Promise<string>
+    +get: <T>(key: string, defaultValue?: T | undefined) => Promise<T>
+    +getAll: <T>() => Promise<T[]>
+    +remove: (key: string) => Promise<boolean>
+    +find: <T>(fieldKey: keyof T, fieldValue: any) => Promise<T[]>
+    +clear: () => Promise<void>
+}
+interface DatabasePort {
+    +keys(prefix: string): Promise<string[]>
+    +set(prefix: string, key: string, obj: T): Promise<string>
+    +get(prefix: string, key: string, modelConstructor?: Constructor<{}> | undefined, defaultValue?: T | undefined): Promise<T>
+    +getAll(prefix: string, modelConstructor?: Constructor<{}> | undefined, defaultValue?: T | undefined): Promise<T[]>
+    +remove(prefix: string, key: string): Promise<boolean>
+    +find(fieldKey: keyof T, fieldValue: any): Promise<T[]>
+    +clear(): Promise<void>
+    +getReplicaObject(prefix: string, modelConstructor?: (new <T>(...args: any) => T) | undefined, indexedFields?: string[] | undefined): Promise<ReplicaObject>
+}
+interface DatabaseObject {
+    +_id: string
+    +_rev: string
+    +key: string
+}
+class DatabaseAdapter implements DatabasePort {
+    -database: PouchDB.Database<{}>
+    +keys(prefix: string): Promise<string[]>
+    +set(prefix: string, key: string, obj: T): Promise<string>
+    +get(prefix: string, key: string, modelConstructor?: Constructor<{}> | undefined, defaultValue?: any): Promise<DTO<T>>
+    +remove(prefix: string, key: string): Promise<boolean>
+    +find(fieldKey: keyof T, fieldValue: any): Promise<DTO<T>[]>
+    +getReplicaObject(prefix: string, modelConstructor?: (new <T>(...args: any) => T) | undefined, indexedFields?: string[] | undefined): Promise<ReplicaObject>
+    +getAll(prefix: string, modelConstructor?: Constructor<{}> | undefined, defaultValue?: T | undefined): Promise<T[]>
+    +clear(): Promise<void>
+    -getPrefix(prefix: string): string
+    -getPrefixedKey(prefix: string, key: string): string
+    -doPromise(name: string, promise: Promise<T>): Promise<T>
+    +{static} PREFIX: "auth"
+}
+interface Collection {
+    +collectionString: string
+}
+abstract class BaseModel<T> implements Collection {
+    +collectionString: string
+    #assign(input?: Partial<T> | undefined): T
+    +update(input?: Partial<T> | undefined): T
+}
+class User extends BaseModel implements IUser {
+    +username: string
+    +userId: string
+    +email?: { email: string; } | undefined
+    +password?: string | undefined
+    +totp?: { raw: string; } | undefined
+    +fido?: PublicKeyObject | undefined
+    +authenticationCredentials: AuthenticationCredential
+    +authenticationTypes: AuthenticationType[]
+    +{static} COLLECTIONSTRING: "user"
+}
+interface UserHandler {
+    +create(user: Partial<User>): Promise<User>
+    +update(userId: string, updatedUser: Partial<User>): Promise<void>
+    +getUserByUsername(username: string): Promise<User>
+    +getUserByUserId(userId: string): Promise<User>
+    +getAllUsers(): Promise<User[]>
+    +hasUser(username: string): Promise<boolean>
+    +reset(): Promise<void>
+}
+namespace Config {
+}
+interface UserDto extends IUser
+class UserService implements UserHandler {
+    -database: DatabasePort
+    -authenticator: AuthGuard
+    -userDatabase: ReplicaObject
+    -userCounter: number
+    -init(): Promise<void>
+    +create(partialUser: Partial<User>): Promise<User>
+    +update(userId: string, update: Partial<User>): Promise<void>
+    +delete(userId: string): Promise<void>
+    +getUserByUsername(username: string): Promise<User>
+    +getUserByUserId(userId: string): Promise<User>
+    +getAllUsers(): Promise<User[]>
+    -insertNewUser(partialUser: Partial<User>): Promise<User>
+    +getAllUsersForClient(): Promise<UserDto[]>
+    +hasUser(username: string): Promise<boolean>
+    +reset(): Promise<void>
+    -resetDatabase(): Promise<void>
+    +onCreateEvent(partialUser: User, values: any): Promise<void>
+    +onGetEvent(userId: string): Promise<User>
+    +onUpdateEvent(update: User, values: any): Promise<void>
+    +onDeleteEvent(userId: string): Promise<void>
+    +onResetEvent(): Promise<void>
+    -mockUserData(): Promise<void>
+    -getFirstIdCounter(): Promise<number>
+}
+interface SocketData {
+    +socketId: string
+    +data: any
+}
+class WebsocketUserService {
+    -websocket: WebsocketHandler
+    -userHandler: UserService
+    +init(): void
+    -sendToSocket(message: SocketData, event: string, fn: (data: any, values?: any) => Promise<any>): Promise<void>
+}
+@enduml

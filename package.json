@@ -5,7 +5,7 @@
   "description": "My Electron application description",
   "main": "electron/main.js",
   "scripts": {
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon src/app/index.ts",
     "electron": "electron .",
     "build": "npm run build-ts && npm run build-client",
     "build-ts": "tsc",

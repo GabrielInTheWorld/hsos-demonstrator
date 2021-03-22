@@ -1,10 +1,11 @@
+import { IUser } from 'auth-guard/dist/lib/core/models/user';
 import { PublicKeyObject } from 'custom-fido-library';
 
 import { AuthenticationCredential } from './authentication/authentication-credential';
 import { AuthenticationType } from './authentication/authentication-types';
 import { BaseModel } from '../base/base-model';
 
-export class User extends BaseModel<User> {
+export class User extends BaseModel<User> implements IUser {
   public static readonly COLLECTIONSTRING = 'user';
 
   public readonly username: string;
@@ -13,7 +14,7 @@ export class User extends BaseModel<User> {
   /**
    * An email-address of a user.
    */
-  public readonly email?: string;
+  public readonly email?: { email: string };
 
   /**
    * The password of a user.
@@ -21,19 +22,9 @@ export class User extends BaseModel<User> {
   public password?: string;
 
   /**
-   * Biometrics information of a user, if available.
-   */
-  public readonly biometrics?: string;
-
-  /**
-   * A secret, which is used to generate an hotp for authenticating with an email.
-   */
-  public readonly emailSecret?: string;
-
-  /**
    * A uri to generating totps.
    */
-  public readonly totp?: string;
+  public readonly totp?: { raw: string };
 
   public fido?: PublicKeyObject;
 
