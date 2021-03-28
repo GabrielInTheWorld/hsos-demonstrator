@@ -28,13 +28,15 @@ export default class AuthenticationServer extends BaseServer {
   private server: Server;
   private routes: Routes;
 
-  private readonly CLIENT_PATH = 'client/dist/client';
+  // private readonly CLIENT_PATH = 'client/dist/client';
+  private readonly clientPath: string;
 
   private readonly port: number;
 
-  public constructor(input: { port: number }) {
+  public constructor(input: { port: number; clientPath: string }) {
     super();
     this.port = input.port;
+    this.clientPath = input.clientPath;
     this.createApp();
     this.createServer();
     this.initializeConfig();
@@ -70,7 +72,9 @@ export default class AuthenticationServer extends BaseServer {
   }
 
   private initClient(): void {
-    this.app.use('/', express.static(path.resolve(this.CLIENT_PATH)));
+    console.log('current dir:', __dirname);
+    console.log('client dir:', this.clientPath);
+    this.app.use('/', express.static(this.clientPath));
   }
 
   private corsFunction(req: express.Request, res: express.Response, next: express.NextFunction): void {

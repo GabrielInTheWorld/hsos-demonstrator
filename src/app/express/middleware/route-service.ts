@@ -59,7 +59,9 @@ export class RouteService extends RouteHandler {
   }
 
   public index(_: any, response: Response): void {
-    const index = path.join(path.resolve('client/dist/client'), 'index.html');
+    const clientPath = process.argv[3] || path.resolve('client/dist/client');
+    Logger.debug('clientPath to send file:', clientPath);
+    const index = path.join(clientPath, 'index.html');
     response.sendFile(index);
   }
 

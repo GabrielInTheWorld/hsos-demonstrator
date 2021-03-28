@@ -1,6 +1,7 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Menu, ipcMain } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const { spawn } = require('child_process');
 
 let childProcess;
@@ -12,7 +13,16 @@ function createMenu() {
 function startServer() {
   return new Promise((resolve, reject) => {
     // Instantiate express server
-    childProcess = spawn('node', ['build/app/index.js'], { shell: true });
+    const buildDir = path.join(__dirname, '../build');
+    console.log('build dir:', fs.readdirSync(buildDir));
+    console.log('app dir:', fs.readdirSync(path.join(buildDir, 'app')));
+    const clientDir = path.join(__dirname, '../client');
+    console.log('client dir:', fs.readdirSync(clientDir));
+    console.log('client dist dir:', fs.readdirSync(path.join(clientDir, 'dist/client')));
+    // console.log('current dir:', fs.readdirSync(__dirname));
+    const server = path.join(__dirname, '../build/app/index.js');
+    console.log('server path:', server);
+    childProcess = spawn('node', [server, '--client', path.join(clientDir, 'dist/client')], { shell: true });
     childProcess.stdout.on('data', message => {
       message = message.toString();
       console.log(message);
@@ -30,6 +40,9 @@ function startServer() {
 }
 
 async function createWindow() {
+  const dirname = path.join(__dirname, '.');
+  console.log('dirname:', dirname);
+  console.log('folders: ', fs.readdirSync(dirname));
   await startServer();
 
   // Create the browser window.

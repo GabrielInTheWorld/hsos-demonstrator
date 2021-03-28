@@ -1,13 +1,35 @@
 {
   "productName": "Demonstrator",
-  "asar": true,
+  "asar": false,
   "directories": {
     "output": "./dist"
   },
+  "extraFiles": [
+    {
+      "from": "client/dist",
+      "to": "."
+    },
+    {
+      "from": "webpack/bundle.js",
+      "to": "."
+    },
+    {
+      "from": "webpack/node_modules",
+      "to": "./node_modules"
+    },
+    {
+      "from": "build",
+      "to": "build"
+    }
+  ],
   "files": [
-    "build",
+    "build/app",
     "client/dist",
+    { "from": "build/**/*", "to": "electron/build" },
+    { "from": "client/dist/**/*", "to": "electron/client/dist" },
     "electron",
+    { "from": "webpack/bundle.js", "to": "electron" },
+    "webpack/bundle.js",
     "!node_modules/rxjs",
     "!client/node_modules/tslib",
     "!client/node_modules/rxjs",
