@@ -1,12 +1,10 @@
 import cookieParser from 'cookie-parser';
-import express, { request } from 'express';
+import express from 'express';
 import { Inject, Injectable } from 'final-di';
 import { createServer, Server } from 'http';
-import path from 'path';
 
 import { BaseServer } from '../interfaces/base-server';
 import { ConfigService } from '../../application/services/config-service';
-// import { Constructable, Inject } from '../../application/model-layer/core/modules/decorators';
 import { Logger } from '../../application/services/logger';
 import { Routes } from '../routes/Routes';
 
@@ -28,7 +26,6 @@ export default class AuthenticationServer extends BaseServer {
   private server: Server;
   private routes: Routes;
 
-  // private readonly CLIENT_PATH = 'client/dist/client';
   private readonly clientPath: string;
 
   private readonly port: number;
@@ -72,8 +69,6 @@ export default class AuthenticationServer extends BaseServer {
   }
 
   private initClient(): void {
-    console.log('current dir:', __dirname);
-    console.log('client dir:', this.clientPath);
     this.app.use('/', express.static(this.clientPath));
   }
 

@@ -11,11 +11,10 @@ import { MessageHandler } from './application/interfaces/message-handler';
 import { MessageService } from './application/services/message-service';
 import { WebsocketUserService } from './api/websocket-user.service';
 
-let clientPath: string = process.argv[3] || 'client/dist/client';
+const clientPath: string = process.argv[3] || 'client/dist/client';
 
 export class Application {
   public static readonly PORT: number = parseInt(process.env.PORT || '', 10) || 8000;
-  public static readonly CLIENT_PATH = 'client/dist/client';
 
   public get port(): number {
     return Application.PORT;
@@ -32,10 +31,6 @@ export class Application {
 
   @Inject(WebsocketUserService)
   private readonly websocketUserService: WebsocketUserService;
-
-  public constructor(args: { clientPath?: string } = {}) {
-    clientPath = args.clientPath || path.resolve(Application.CLIENT_PATH);
-  }
 
   public start(): Server {
     const server = this.httpServer.getServer().listen(Application.PORT, () => {
