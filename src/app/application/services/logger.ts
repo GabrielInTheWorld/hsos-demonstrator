@@ -72,4 +72,13 @@ export class Logger {
   public static getLogMessagesObservable(): Observable<any[]> {
     return this._logMessageSubject.asObservable();
   }
+
+  public static getInstance(): any {
+    return {
+      log: (...messages: any[]) => Logger.log(...messages),
+      debug: (...messages: any[]) => Logger.debug(...messages),
+      warn: (...messages: any[]) => Logger.warn(...messages),
+      error: (...messages: any[]) => Logger.error(...messages)
+    };
+  }
 }

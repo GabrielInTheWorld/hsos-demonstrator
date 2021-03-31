@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Logger } from 'src/app/core/utils/logger';
 
 import { FidoDialogComponent } from '../components/fido-dialog/fido-dialog.component';
 import { SocketService } from './../../../../core/services/socket.service';
@@ -66,6 +67,7 @@ export class FidoAuthenticatorService {
     private async onLogin(credentialOptions: any): Promise<any> {
         const fromHexString = (hexString: string) =>
             new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+        Logger.next('FIDO: Erhaltene Challenge', credentialOptions.challenge);
         credentialOptions.challenge = this.base64ToBuffer(credentialOptions.challenge);
         for (const allowCredentials of credentialOptions.allowCredentials) {
             allowCredentials.id = fromHexString(atob(allowCredentials.id));
@@ -73,6 +75,7 @@ export class FidoAuthenticatorService {
         this.dialog.open(FidoDialogComponent, {
             data: { title: 'Authentifizierungsprozess', content: 'Bitte tippen Sie jetzt auf Ihr FIDO2-Token' }
         });
+        Logger.next('FIDO: Benutzerinteraktion ist erforderlich.');
         const credentials: any = await navigator.credentials.get({ publicKey: credentialOptions });
         return {
             id: credentials.id,
@@ -110,9 +113,11 @@ export class FidoAuthenticatorService {
 
     private async onAnswerFromServer(answer: any): Promise<Credential> {
         const publicKeyCredentialCreationOptions = this.extractPublicKeyCredentialCreationOptions(answer);
+        Logger.next('FIDO: Erhaltene Challenge', publicKeyCredentialCreationOptions.challenge);
         this.dialog.open(FidoDialogComponent, {
             data: { title: 'Registrierungsprozess', content: 'Bitte tippen Sie jetzt auf Ihr FIDO2-Token' }
         });
+        Logger.next('FIDO: Benutzerinteraktion ist erforderlich.');
         const credential = (await navigator.credentials.create({
             publicKey: publicKeyCredentialCreationOptions
         })) as any;

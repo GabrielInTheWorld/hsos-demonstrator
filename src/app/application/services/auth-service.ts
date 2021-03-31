@@ -11,6 +11,7 @@ import { TicketService } from './ticket-service';
 import { UserHandler } from '../model-layer/user/user-handler';
 import { UserService } from '../model-layer/user/user-service';
 import { Validation } from '../model-layer/core/models/validation';
+import { Config } from '../util/config';
 
 export class AuthService extends AuthHandler {
   @Inject(UserService)
@@ -22,7 +23,11 @@ export class AuthService extends AuthHandler {
   @Inject(SessionService)
   private readonly sessionHandler: SessionService;
 
-  @Inject(AuthGuard)
+  @Inject(AuthGuard, {
+    logger: Logger.getInstance(),
+    expectedOrigins: [Config.localClientUrl, Config.localServerUrl],
+    domain: 'no-reply@demonstrator.com'
+  })
   private readonly provider: AuthGuard;
 
   public async confirmAdditionalCredentials(

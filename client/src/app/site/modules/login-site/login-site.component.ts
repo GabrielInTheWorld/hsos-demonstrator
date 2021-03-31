@@ -104,7 +104,6 @@ export class LoginSiteComponent extends BaseComponent implements OnInit {
 
     private async prepareFido(): Promise<void> {
         if (this.requiredAuthenticationData.fido) {
-            Logger.next('FIDO-Challenge erhalten. Erstelle Response.');
             const credentials = await this.fido.login(this.requiredAuthenticationData.fido);
             this.fidoCredentials = credentials;
             this.authForm.patchValue({ fido: credentials });

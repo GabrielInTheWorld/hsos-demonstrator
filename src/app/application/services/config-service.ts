@@ -4,9 +4,11 @@ import { WebsocketHandler } from 'reactive-websocket';
 
 import { AuthenticationType } from '../model-layer/core/models/authentication/authentication-types';
 import { Config } from '../util/config';
+import { Logger } from './logger';
 
 export class ConfigService {
   @Inject(AuthGuard, {
+    logger: Logger.getInstance(),
     expectedOrigins: [Config.localClientUrl, Config.localServerUrl],
     domain: 'no-reply@demonstrator.com'
   })

@@ -17,7 +17,7 @@ export class UserService implements UserHandler {
   private readonly database: DatabasePort;
 
   @Inject(AuthGuard, {
-    logger: Logger,
+    logger: Logger.getInstance(),
     expectedOrigins: [Config.localClientUrl, Config.localServerUrl],
     domain: 'no-reply@demonstrator.com'
   })

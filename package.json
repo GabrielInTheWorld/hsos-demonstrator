@@ -1,7 +1,7 @@
 {
   "name": "demonstrator",
   "productName": "demonstrator",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "My Electron application description",
   "main": "electron/main.js",
   "scripts": {
@@ -21,7 +21,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "auth-guard": "^1.0.9",
+    "auth-guard": "^1.0.12",
     "base-coding": "^1.0.3",
     "bignumber.js": "^9.0.1",
     "body-parser": "^1.19.0",
