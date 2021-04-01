@@ -1,0 +1,119 @@
+@startuml
+class BaseComponent implements OnDestroy {
+    #subscriptions: Subscription[]
+    +ngOnDestroy(): void
+}
+class ConsoleComponent extends BaseComponent implements OnInit, AfterViewInit {
+    +consoleWrapper: ElementRef<HTMLDivElement>
+    +virtualScrollViewport?: CdkVirtualScrollViewport | undefined
+    +isOpen: boolean
+    +isOpen: boolean
+    +messageObservable: Observable<string[]>
+    +messages: string[]
+    -_isOpen: boolean
+    -cd: ChangeDetectorRef
+    +ngOnInit(): void
+    +ngAfterViewInit(): void
+    +trackByIndex(index: number): number
+    -scrollToBottom(): void
+}
+class DashboardComponent extends BaseComponent implements OnInit, OnDestroy {
+    -DASHBOARD_ITEMS: any[]
+    +color: any
+    +dashboardItems: any[]
+    +isOAuthActivated: boolean
+    -_oauthActivated: boolean
+    -auth: any
+    -authTokenService: any
+    +ngOnInit(): Promise<void>
+    +ngOnDestroy(): void
+    +sayHello(): void
+    +whoAmI(): void
+    +logout(): void
+    +isAuthenticated(): boolean
+}
+class LoginSiteComponent extends BaseComponent implements OnInit {
+    +loginForm: FormGroup
+    +additionalForm: FormGroup
+    +errorMessage: string
+    +showSpinner: boolean
+    +authForm: FormGroup
+    +requiredAuthenticationFactors: string[]
+    +requiredAuthenticationData: { [key: string]: any; }
+    +isVisible: boolean
+    +username: string
+    +fidoCredentials: any
+    -fb: FormBuilder
+    -auth: any
+    -fido: any
+    -matSnackbar: MatSnackBar
+    +ngOnInit(): void
+    +login(): Promise<void>
+    +confirmLogin(): Promise<void>
+    +clear(): void
+    +cancel(): void
+    -prepareAuthForm(): void
+    -prepareFido(): Promise<void>
+    -getVerboseReasons(reasons: string[]): string
+}
+interface AuthTypeValue {
+    +email?: string | undefined
+    +totp?: string | undefined
+    +password?: string | undefined
+}
+class UserAuthenticationTypeChooserComponent extends BaseComponent implements OnInit {
+    +authenticationModel: { 'cross-platform': string; }
+    +selectedAuthenticationTypes: string[]
+    +selectedAuthenticationTypes: string[]
+    +username: string
+    +username: string
+    +user: any
+    +formChange: EventEmitter<AuthTypeValue>
+    +authTypeForm: FormGroup
+    +totpUri: string
+    +isVisible: boolean
+    -selectedTypes: string[]
+    -_username: string
+    -fb: FormBuilder
+    -crypto: any
+    +ngOnInit(): void
+    +getValue(): AuthTypeValue
+    -prepareTotp(): void
+}
+interface UserDetailDialogData {
+    +user?: any
+    +authenticationTypes: string[]
+}
+class UserDetailDialogComponent extends BaseComponent implements OnInit {
+    +userForm: FormGroup
+    +user: any
+    +username: string
+    +authenticationTypes: string[]
+    +selectedAuthenticationTypes: string[]
+    +authTypeForm: { [key: string]: string; }
+    -_selectedTypes: string[]
+    -_username: string
+    +dialogRef: MatDialogRef<UserDetailDialogComponent, any>
+    -data: UserDetailDialogData
+    -fb: FormBuilder
+    +ngOnInit(): void
+    +onSubmit(): void
+    +isValid(): boolean
+    +getVerboseAuthenticationType(type: string): string
+}
+class UserManagementComponent extends BaseComponent implements OnInit, OnDestroy {
+    +users: any[]
+    -_users: any[]
+    -userService: any
+    -fidoService: any
+    -dialog: MatDialog
+    -promptService: any
+    +ngOnInit(): void
+    +ngOnDestroy(): void
+    +createUser(): Promise<void>
+    +editUser(user: any): Promise<void>
+    +deleteUser(user: any): Promise<void>
+    +resetDatabase(): Promise<void>
+    -showUserDetailDialog(user?: any): Promise<any>
+}
+@enduml
