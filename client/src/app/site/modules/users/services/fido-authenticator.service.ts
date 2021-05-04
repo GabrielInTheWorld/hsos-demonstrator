@@ -108,7 +108,9 @@ export class FidoAuthenticatorService {
             content = 'cancel';
         }
         this.dialog.closeAll();
-        await this.userService.updateCurrentUserToCreate({ fido: content.credential, userId: answer.user.id });
+        if (content.credential) {
+            await this.userService.updateCurrentUserToCreate({ fido: content.credential, userId: answer.user.id });
+        }
     }
 
     private async onAnswerFromServer(answer: any): Promise<Credential> {

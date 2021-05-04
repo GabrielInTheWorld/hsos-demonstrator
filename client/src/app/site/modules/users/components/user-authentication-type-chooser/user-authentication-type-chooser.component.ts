@@ -21,7 +21,7 @@ export interface AuthTypeValue {
 })
 export class UserAuthenticationTypeChooserComponent extends BaseComponent implements OnInit {
     public readonly authenticationModel = {
-        // platform: 'Betriebssystemabhängige Authentifizierung', // Currently not working
+        platform: 'Betriebssystemabhängige Authentifizierung',
         'cross-platform': 'Authentifizierung mittels externem Token'
     };
 
@@ -74,8 +74,8 @@ export class UserAuthenticationTypeChooserComponent extends BaseComponent implem
             password: this.user?.password || '',
             fido: 'cross-platform'
         });
-        this.formChange.emit(this.authTypeForm.value); // emitting initial value
-        this.subscriptions.push(this.authTypeForm.valueChanges.subscribe(value => this.formChange.emit(value)));
+        this.propagateChanges(this.authTypeForm.value); // emitting initial value
+        this.subscriptions.push(this.authTypeForm.valueChanges.subscribe(value => this.propagateChanges(value)));
     }
 
     public getValue(): AuthTypeValue {
@@ -101,5 +101,10 @@ export class UserAuthenticationTypeChooserComponent extends BaseComponent implem
             return;
         }
         this.authTypeForm.patchValue({ totp: totpUri });
+    }
+
+    private propagateChanges(value: any): void {
+        value = { ...value, fido: { authenticatorAttachment: value.fido } };
+        this.formChange.emit(value);
     }
 }
